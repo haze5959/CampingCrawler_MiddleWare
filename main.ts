@@ -1,6 +1,32 @@
-import { serve } from "https://deno.land/std@0.83.0/http/server.ts";
-const s = serve({ port: 8000 });
-console.log("http://localhost:8000/");
-for await (const req of s) {
-  req.respond({ body: "Hello World\n" });
-}
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { RedisRepository } from "./redisRepository.ts";
+
+const router = new Router();
+const repository = new RedisRepository();
+
+router
+  .get("/", (context) => {
+    context.response.body = "hi~";
+  })
+  .get("/camp", async (context) => {
+    const infos = await repository.getAllCampSpotInfo();
+    const infoJson = infos.map((value, index) => {
+      const json = {
+        "site": value.name,
+        "availDates": value.availDates,
+        "updatedDate": value.updatedDate,
+      };
+
+      return json;
+    });
+
+    context.response.body = infoJson;
+  });
+
+const app = new Application();
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+console.info("CAMP_MIDDLEWARE Start!!");
+
+await app.listen({ port: 8000 });
