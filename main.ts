@@ -27,7 +27,7 @@ router
 const app = new Application();
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.use(oakCors({ origin: "*" }));
+app.use(oakCors());
 
 console.info("CAMP_MIDDLEWARE Start!!");
 
