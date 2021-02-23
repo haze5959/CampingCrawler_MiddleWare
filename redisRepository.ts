@@ -1,5 +1,6 @@
 import { connect } from "https://deno.land/x/redis/mod.ts";
 import { RedisAccount } from "./redisAccount.ts";
+import { CampInfo } from "./CampInfoModel.ts";
 
 const redis = await connect({
   hostname: RedisAccount.host,
@@ -7,22 +8,16 @@ const redis = await connect({
   password: RedisAccount.pw,
 });
 
-const campSiteKeys = ["camp_munsoo"];
+// const campSiteKeys = ["camp_munsoo"];
 
-class CampInfo {
-  name: string;
-  availDates: string[] | undefined;
-  updatedDate: string | undefined;
-
-  constructor(
-    name: string,
-    availDates: string[] | undefined,
-    updatedDate: string | undefined,
-  ) {
-    this.name = name;
-    this.availDates = availDates;
-    this.updatedDate = updatedDate;
-  }
+const campSiteKeys = {
+  "CampArea.seoul": [],
+  "CampArea.gyeonggi": ["camp_munsoo"],
+  "CampArea.inchoen": ["camp_namu"],
+  "CampArea.chungnam": [],
+  "CampArea.chungbuk": [],
+  "CampArea.gangwon": [],
+  "CampArea.etc": []
 }
 
 class RedisRepository {
@@ -41,6 +36,15 @@ class RedisRepository {
     }
 
     return compInfoArr;
+  }
+
+  async getCampSpotInfoWith(area: Array<string>): Promise<Array<CampInfo>> {
+    const availDatesStr = await redis.hget(site, "availDates");
+    const updateTime = await redis.hget(site, "updateTime");
+
+    const availDates = availDatesStr?.split(",")
+
+    return new CampInfo(site, availDates, updateTime);
   }
 
   async getCampSpotInfo(site: string): Promise<CampInfo> {
