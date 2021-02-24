@@ -8,12 +8,10 @@ const redis = await connect({
   password: RedisAccount.pw,
 });
 
-// const campSiteKeys = ["camp_munsoo"];
-
 const campSiteKeys = {
   "CampArea.seoul": [],
   "CampArea.gyeonggi": ["camp_munsoo"],
-  "CampArea.inchoen": ["camp_namu"],
+  "CampArea.inchoen": ["camp_tree"],
   "CampArea.chungnam": [],
   "CampArea.chungbuk": [],
   "CampArea.gangwon": [],
@@ -26,10 +24,12 @@ class RedisRepository {
 
   async getAllCampSpotInfo(): Promise<Array<CampInfo>> {
     var compInfoArr = Array<CampInfo>();
-    for (const site of campSiteKeys) {
+    for (const area in campSiteKeys) {
       try {
-        const campInfo = await this.getCampSpotInfo(site);
-        compInfoArr.push(campInfo);
+        for (const site in campSiteKeys[area]) {
+          const campInfo = await this.getCampSpotInfo(site);
+          compInfoArr.push(campInfo);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -38,13 +38,20 @@ class RedisRepository {
     return compInfoArr;
   }
 
-  async getCampSpotInfoWith(area: Array<string>): Promise<Array<CampInfo>> {
-    const availDatesStr = await redis.hget(site, "availDates");
-    const updateTime = await redis.hget(site, "updateTime");
+  async getCampSpotInfoWithIn(areaArr: Array<string>): Promise<Array<CampInfo>> {
+    var compInfoArr = Array<CampInfo>();
+    for (const area in areaArr) {
+      try {
+        for (const site in campSiteKeys[area]) {
+          const campInfo = await this.getCampSpotInfo(site);
+          compInfoArr.push(campInfo);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
-    const availDates = availDatesStr?.split(",")
-
-    return new CampInfo(site, availDates, updateTime);
+    return compInfoArr;
   }
 
   async getCampSpotInfo(site: string): Promise<CampInfo> {
