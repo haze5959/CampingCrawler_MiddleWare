@@ -27,7 +27,6 @@ class RedisRepository {
     for (const area in campSiteKeys) {
       try {
         for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
-          console.info("site0: " + site);
           const campInfo = await this.getCampSpotInfo(site);
           compInfoArr.push(campInfo);
         }
@@ -45,11 +44,9 @@ class RedisRepository {
     }
 
     var compInfoArr = Array<CampInfo>();
-    for (const area in areaArr) {
-      console.info("area: " + area);
+    for (const area of areaArr) {
       try {
         for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
-          console.info("site1: " + site);
           const campInfo = await this.getCampSpotInfo(site);
           compInfoArr.push(campInfo);
         }
