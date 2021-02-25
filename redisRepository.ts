@@ -9,13 +9,13 @@ const redis = await connect({
 });
 
 const campSiteKeys = {
-  "CampArea.seoul": [],
+  "CampArea.seoul": <string[]>[],
   "CampArea.gyeonggi": ["camp_munsoo"],
   "CampArea.inchoen": ["camp_tree"],
-  "CampArea.chungnam": [],
-  "CampArea.chungbuk": [],
-  "CampArea.gangwon": [],
-  "CampArea.etc": []
+  "CampArea.chungnam": <string[]>[],
+  "CampArea.chungbuk": <string[]>[],
+  "CampArea.gangwon": <string[]>[],
+  "CampArea.etc": <string[]>[]
 }
 
 class RedisRepository {
@@ -26,7 +26,7 @@ class RedisRepository {
     var compInfoArr = Array<CampInfo>();
     for (const area in campSiteKeys) {
       try {
-        for (const site in campSiteKeys[area]) {
+        for (const site in campSiteKeys[area as keyof typeof campSiteKeys]) {
           const campInfo = await this.getCampSpotInfo(site);
           compInfoArr.push(campInfo);
         }
@@ -39,10 +39,14 @@ class RedisRepository {
   }
 
   async getCampSpotInfoWithIn(areaArr: Array<string>): Promise<Array<CampInfo>> {
+    if (areaArr.length > 0) {
+      return this.getAllCampSpotInfo()
+    }
+
     var compInfoArr = Array<CampInfo>();
     for (const area in areaArr) {
       try {
-        for (const site in campSiteKeys[area]) {
+        for (const site in campSiteKeys[area as keyof typeof campSiteKeys]) {
           const campInfo = await this.getCampSpotInfo(site);
           compInfoArr.push(campInfo);
         }
