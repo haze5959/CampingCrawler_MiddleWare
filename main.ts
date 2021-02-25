@@ -10,7 +10,6 @@ router
     context.response.body = "hi~";
   })
   .get("/camp", async ({ request, response, params }) => {
-    console.log("params: " + request.url.searchParams.getAll('area[]'));
     const queryParams = request.url.searchParams.getAll('area[]')
     
     const infos = await repository.getCampSpotInfoWithIn(queryParams);
