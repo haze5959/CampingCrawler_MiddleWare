@@ -46,6 +46,7 @@ class RedisRepository {
 
     var compInfoArr = Array<CampInfo>();
     for (const area in areaArr) {
+      console.info("area: " + area);
       try {
         for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
           console.info("site1: " + site);
