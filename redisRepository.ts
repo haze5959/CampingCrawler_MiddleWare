@@ -39,7 +39,7 @@ class RedisRepository {
   }
 
   async getCampSpotInfoWithIn(areaArr: Array<string>): Promise<Array<CampInfo>> {
-    if (areaArr.length > 0) {
+    if (areaArr.length == 0) {
       return this.getAllCampSpotInfo()
     }
 
