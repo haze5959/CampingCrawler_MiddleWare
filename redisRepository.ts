@@ -1,6 +1,6 @@
 import { connect } from "https://deno.land/x/redis/mod.ts";
 import { RedisAccount } from "./redisAccount.ts";
-import { CampInfo } from "./CampInfoModel.ts";
+import { CampInfo, CampArea } from "./CampInfoModel.ts";
 
 const redis = await connect({
   hostname: RedisAccount.host,
@@ -9,13 +9,13 @@ const redis = await connect({
 });
 
 const campSiteKeys = {
-  "CampArea.seoul": <string[]>[],
-  "CampArea.gyeonggi": ["camp_munsoo"],
-  "CampArea.inchoen": ["camp_tree"],
-  "CampArea.chungnam": <string[]>[],
-  "CampArea.chungbuk": <string[]>[],
-  "CampArea.gangwon": <string[]>[],
-  "CampArea.etc": <string[]>[]
+  [CampArea.seoul]: <string[]>[],
+  [CampArea.gyeonggi]: ["camp_munsoo"],
+  [CampArea.inchoen]: ["camp_tree"],
+  [CampArea.chungnam]: <string[]>[],
+  [CampArea.chungbuk]: <string[]>[],
+  [CampArea.gangwon]: <string[]>[],
+  [CampArea.etc]: <string[]>[]
 }
 
 class RedisRepository {

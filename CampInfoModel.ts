@@ -14,4 +14,14 @@ class CampInfo {
   }
 }
 
-export { CampInfo };
+enum CampArea {
+  seoul = "CampArea.seoul",
+  gyeonggi = "CampArea.gyeonggi",
+  inchoen = "CampArea.inchoen",
+  chungnam = "CampArea.chungnam",
+  chungbuk = "CampArea.chungbuk",
+  gangwon = "CampArea.gangwon",
+  etc = "CampArea.etc",
+}
+
+export { CampInfo, CampArea };
