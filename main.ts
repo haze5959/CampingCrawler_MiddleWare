@@ -25,6 +25,19 @@ router
 
     response.body = infoJson;
   })
+  .get("/camp/:id", async ({ request, response, params }) => {
+    if (params && params.id) {
+      const campKey: string = params.id;
+      const info = await repository.getCampSpotInfo(campKey)
+      const json = {
+        "site": info.name,
+        "availDates": info.availDates,
+        "updatedDate": info.updatedDate,
+      };
+
+      response.body = json;
+    }
+  })
   .get("/info", (context) => {
     context.response.body = siteInfo;
   });
@@ -37,6 +50,3 @@ app.use(router.allowedMethods());
 console.info("CAMP_MIDDLEWARE Start!!");
 
 await app.listen({ port: 8000 });
-
-// 읽어보기!!
-// https://ichi.pro/ko/deno-oak-mich-mysqleul-sayonghayeo-blogging-api-guchug-mich-dockerize-267065037401964
