@@ -46,15 +46,11 @@ router
   .get("/post/:page", async ({ request, response, params }) => {
     if (params && params.page) {
       const page = Number(params.page);
+      console.log("page: " + page);
       try {
         const info = await dbRepo.getAllPosts();
-      // const json = {
-      //   "site": info.name,
-      //   "availDates": info.availDates,
-      //   "updatedDate": info.updatedDate,
-      // };
 
-      response.body = info;
+        response.body = info;
       } catch (error) {
         console.error(error);
       }
