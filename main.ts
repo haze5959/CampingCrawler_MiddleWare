@@ -13,7 +13,7 @@ router
     context.response.body = "hi~";
   })
   .get("/camp", async ({ request, response, params }) => {
-    const queryParams = request.url.searchParams.getAll('area')
+    const queryParams = request.url.searchParams.getAll("area");
     const infos = await redisRepo.getCampSpotInfoWithIn(queryParams);
     const infoJson = infos.map((value, index) => {
       const json = {
@@ -30,7 +30,7 @@ router
   .get("/camp/:id", async ({ request, response, params }) => {
     if (params && params.id) {
       const campKey: string = params.id;
-      const info = await redisRepo.getCampSpotInfo(campKey)
+      const info = await redisRepo.getCampSpotInfo(campKey);
       const json = {
         "site": info.name,
         "availDates": info.availDates,
@@ -43,12 +43,11 @@ router
   .get("/info", (context) => {
     context.response.body = siteInfo;
   })
-  .get("/post/:page", async ({ request, response, params }) => {
-    if (params && params.page) {
-      const page = Number(params.page);
-      console.log("page: " + page);
+  .get("/post/:id", async ({ request, response, params }) => {
+    if (params && params.id) {
+      const page = Number(params.id);
       try {
-        const info = await dbRepo.getAllPosts();
+        const info = await dbRepo.getPosts(page);
 
         response.body = info;
       } catch (error) {
@@ -56,6 +55,103 @@ router
       }
     }
   })
+  .get("/post/list/:page", async ({ request, response, params }) => {
+    if (params && params.page) {
+      const page = Number(params.page);
+      try {
+        const info = await dbRepo.getPostsWith(page);
+
+        response.body = info;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  })
+  .post("/post", async ({ request, response, params }) => {
+    if (request.hasBody) {
+      try {
+        const body = await request.body({ type: "json" }).value;
+        const type = body["type"] as number;
+        const title = body["title"] as string;
+        const bodyVal = body["body"] as string;
+        const nick = body["nick"] as string;
+
+        const result = await dbRepo.createPosts(type, title, bodyVal, nick);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      } catch (error) {
+        console.error(error);
+        response.body = { result: false, msg: error };
+      }
+    } else {
+      response.body = { result: false, msg: "no params." };
+    }
+  })
+  .post("/comment", async ({ request, response, params }) => {
+    if (request.hasBody) {
+      try {
+        const body = await request.body({ type: "json" }).value;
+        const postId = body["postId"] as number;
+        const nick = body["nick"] as string;
+        const comment = body["comment"] as string;
+
+        const result = await dbRepo.createComment(postId, nick, comment);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      } catch (error) {
+        console.error(error);
+        response.body = { result: false, msg: error };
+      }
+    } else {
+      response.body = { result: false, msg: "no params." };
+    }
+  })
+  .delete("/post", async ({ request, response, params }) => {
+    if (request.hasBody) {
+      try {
+        const body = await request.body({ type: "json" }).value;
+        const id = body["id"] as number;
+
+        const result = await dbRepo.deletePosts(id);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      } catch (error) {
+        console.error(error);
+        response.body = { result: false, msg: error };
+      }
+    } else {
+      response.body = { result: false, msg: "no params." };
+    }
+  })
+  .delete("/comment", async ({ request, response, params }) => {
+    if (request.hasBody) {
+      try {
+        const body = await request.body({ type: "json" }).value;
+        const id = body["id"] as number;
+
+        const result = await dbRepo.deleteComment(id);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      } catch (error) {
+        console.error(error);
+        response.body = { result: false, msg: error };
+      }
+    } else {
+      response.body = { result: false, msg: "no params." };
+    }
+  });
 
 const app = new Application();
 app.use(oakCors({ origin: "*" }));
