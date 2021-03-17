@@ -48,10 +48,21 @@ router
       const page = Number(params.id);
       try {
         const info = await dbRepo.getPosts(page);
+        if (info.posts["type"] == 3) {
+          const secretKey = request.url.searchParams.get("key");
+          console.log(secretKey);
+          if (info.posts["secret_key"] == secretKey) {
+            response.body = info;
+            return;
+          }
+          response.body = { result: false, msg: "잘못된 비밀번호입니다." };
+          return;
+        }
 
         response.body = info;
       } catch (error) {
         console.error(error);
+        response.body = { result: false, msg: error };
       }
     }
   })
@@ -64,6 +75,7 @@ router
         response.body = info;
       } catch (error) {
         console.error(error);
+        response.body = { result: false, msg: error };
       }
     }
   })
@@ -75,8 +87,15 @@ router
         const title = body["title"] as string;
         const bodyVal = body["body"] as string;
         const nick = body["nick"] as string;
+        const secretKey = body["secret_key"] as string | null;
 
-        const result = await dbRepo.createPosts(type, title, bodyVal, nick);
+        const result = await dbRepo.createPosts(
+          type,
+          title,
+          bodyVal,
+          nick,
+          secretKey,
+        );
         if (result.affectedRows != null) {
           response.body = { result: true, msg: "" };
         } else {

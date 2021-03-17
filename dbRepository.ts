@@ -21,7 +21,7 @@ class DBRepository {
     );
 
     return {
-      posts: posts,
+      posts: posts[0],
       comments: comments,
     };
   }
@@ -29,15 +29,29 @@ class DBRepository {
   async getPostsWith(page: number) {
     const amountOfPage = 10;
     return await client.query(
-      `SELECT * FROM camp.post Limit ${amountOfPage * page}, ${amountOfPage};`,
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post Limit ${amountOfPage *
+        page}, ${amountOfPage};`,
     );
   }
 
-  async createPosts(type: number, title: string, body: string, nick: string) {
-    return await client.execute(
-      `INSERT INTO camp.post (type, title, body, nick, edit_time, comment_count)
-    values(${type}, "${title}", "${body}", "${nick}", now(), 0);`,
-    );
+  async createPosts(
+    type: number,
+    title: string,
+    body: string,
+    nick: string,
+    secretKey: string | null,
+  ) {
+    if (secretKey == null) {
+      return await client.execute(
+        `INSERT INTO camp.post (type, title, body, nick, edit_time, comment_count)
+      values(${type}, "${title}", "${body}", "${nick}", now(), 0);`,
+      );
+    } else {
+      return await client.execute(
+        `INSERT INTO camp.post (type, title, body, nick, edit_time, comment_count, secret_key)
+      values(${type}, "${title}", "${body}", "${nick}", now(), 0, "${secretKey}");`,
+      );
+    }
   }
 
   async createComment(postId: number, nick: string, comment: string) {
