@@ -26,12 +26,36 @@ class DBRepository {
     };
   }
 
-  async getPostsWith(page: number) {
+  async getHomePosts() {
     const amountOfPage = 10;
-    return await client.query(
-      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post Limit ${amountOfPage *
-        page}, ${amountOfPage};`,
+
+    const notice = await client.query(
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=0 Limit 0, ${amountOfPage};`,
     );
+    const posts = await client.query(
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type!=0 Limit 0, ${amountOfPage};`,
+    );
+
+    return {
+      "notice": notice,
+      "posts": posts
+    };
+  }
+
+  async getPostsWith(page: number, type: string | null) {
+    const amountOfPage = 10;
+
+    if (type == null) {
+      return await client.query(
+        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post Limit ${amountOfPage *
+          page}, ${amountOfPage};`,
+      );
+    } else {
+      return await client.query(
+        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=${Number(type)} Limit ${amountOfPage *
+          page}, ${amountOfPage};`,
+      );
+    }
   }
 
   async createPosts(

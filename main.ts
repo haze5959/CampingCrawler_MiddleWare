@@ -43,6 +43,14 @@ router
   .get("/info", (context) => {
     context.response.body = siteInfo;
   })
+  .get("/home", async ({ request, response, params }) => {
+    try {
+      response.body = await dbRepo.getHomePosts();
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  })
   .get("/post/:id", async ({ request, response, params }) => {
     if (params && params.id) {
       const page = Number(params.id);
@@ -50,7 +58,7 @@ router
         const info = await dbRepo.getPosts(page);
         if (info.posts["type"] == 3) {
           const secretKey = request.url.searchParams.get("key");
-          console.log(secretKey);
+          
           if (info.posts["secret_key"] == secretKey) {
             response.body = info;
             return;
@@ -69,9 +77,9 @@ router
   .get("/post/list/:page", async ({ request, response, params }) => {
     if (params && params.page) {
       const page = Number(params.page);
+      const type: string | null = request.url.searchParams.get("type");
       try {
-        const info = await dbRepo.getPostsWith(page);
-
+        const info = await dbRepo.getPostsWith(page, type);
         response.body = info;
       } catch (error) {
         console.error(error);
