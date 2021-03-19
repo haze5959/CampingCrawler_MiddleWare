@@ -42,17 +42,21 @@ class DBRepository {
     };
   }
 
-  async getPostsWith(page: number, type: string | null) {
+  async getPostsWith(page: number, typeArr: string[]) {
     const amountOfPage = 10;
 
-    if (type == null) {
+    if (typeArr.length == 0) {
       return await client.query(
         `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post Limit ${amountOfPage *
           page}, ${amountOfPage};`,
       );
     } else {
+      const reducer = (acc: string, curr: string) => acc + ` OR type=${Number(curr)}`;
+      const first = typeArr.pop();
+      const sqlFilter = typeArr.reduce(reducer, `type=${Number(first)}`)
+
       return await client.query(
-        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=${Number(type)} Limit ${amountOfPage *
+        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE ${sqlFilter} Limit ${amountOfPage *
           page}, ${amountOfPage};`,
       );
     }

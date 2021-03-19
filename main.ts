@@ -77,9 +77,10 @@ router
   .get("/post/list/:page", async ({ request, response, params }) => {
     if (params && params.page) {
       const page = Number(params.page);
-      const type: string | null = request.url.searchParams.get("type");
+      const typeArr: string[] = request.url.searchParams.getAll("type");
+      
       try {
-        const info = await dbRepo.getPostsWith(page, type);
+        const info = await dbRepo.getPostsWith(page, typeArr);
         response.body = info;
       } catch (error) {
         console.error(error);
