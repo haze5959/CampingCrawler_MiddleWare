@@ -14,38 +14,51 @@ router
   })
   .get("/camp", async ({ request, response, params }) => {
     const queryParams = request.url.searchParams.getAll("area");
-    const infos = await redisRepo.getCampSpotInfoWithIn(queryParams);
-    const infoJson = infos.map((value, index) => {
-      const json = {
-        "site": value.name,
-        "availDates": value.availDates,
-        "updatedDate": value.updatedDate,
-      };
 
-      return json;
-    });
+    try {
+      const infos = await redisRepo.getCampSpotInfoWithIn(queryParams);
+      const infoJson = infos.map((value, index) => {
+        const json = {
+          "site": value.name,
+          "availDates": value.availDates,
+          "updatedDate": value.updatedDate,
+        };
 
-    response.body = infoJson;
+        return json;
+      });
+
+      response.body = { result: true, msg: "", data: infoJson };
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
   })
   .get("/camp/:id", async ({ request, response, params }) => {
     if (params && params.id) {
       const campKey: string = params.id;
-      const info = await redisRepo.getCampSpotInfo(campKey);
-      const json = {
-        "site": info.name,
-        "availDates": info.availDates,
-        "updatedDate": info.updatedDate,
-      };
+      try {
+        const info = await redisRepo.getCampSpotInfo(campKey);
+        const json = {
+          "site": info.name,
+          "availDates": info.availDates,
+          "updatedDate": info.updatedDate,
+        };
 
-      response.body = json;
+        response.body = { result: true, msg: "", data: json };
+      } catch (error) {
+        response.body = { result: false, msg: error };
+      }
+    } else {
+      response.body = { result: false, msg: "param fail" };
     }
   })
   .get("/info", (context) => {
-    context.response.body = siteInfo;
+    context.response.body = { result: true, msg: "", data: siteInfo };
   })
   .get("/home", async ({ request, response, params }) => {
     try {
-      response.body = await dbRepo.getHomePosts();
+      const data = await dbRepo.getHomePosts();
+      response.body = { result: true, msg: "", data: data };
     } catch (error) {
       console.error(error);
       response.body = { result: false, msg: error };
@@ -56,22 +69,24 @@ router
       const page = Number(params.id);
       try {
         const info = await dbRepo.getPosts(page);
-        if (info.posts["type"] == 3) {
+        if (info != null && info.posts["type"] == 3) {
           const secretKey = request.url.searchParams.get("key");
           
           if (info.posts["secret_key"] == secretKey) {
-            response.body = info;
-            return;
+            response.body = { result: true, msg: "", data: info };
+          } else {
+            response.body = { result: false, msg: "잘못된 비밀번호입니다." };
           }
-          response.body = { result: false, msg: "잘못된 비밀번호입니다." };
           return;
         }
 
-        response.body = info;
+        response.body = { result: true, msg: "", data: info };
       } catch (error) {
         console.error(error);
         response.body = { result: false, msg: error };
       }
+    } else {
+      response.body = { result: false, msg: "param fail" };
     }
   })
   .get("/post/list/:page", async ({ request, response, params }) => {
@@ -81,11 +96,13 @@ router
       
       try {
         const info = await dbRepo.getPostsWith(page, typeArr);
-        response.body = info;
+        response.body = { result: true, msg: "", data: info };
       } catch (error) {
         console.error(error);
         response.body = { result: false, msg: error };
       }
+    } else {
+      response.body = { result: false, msg: "param fail" };
     }
   })
   .post("/post", async ({ request, response, params }) => {
@@ -95,8 +112,20 @@ router
         const type = body["type"] as number;
         const title = body["title"] as string;
         const bodyVal = body["body"] as string;
-        const nick = body["nick"] as string;
+        var nick = body["nick"] as string;
         const secretKey = body["secret_key"] as string | null;
+
+        if (type == 0) {  // 공지사항이라면
+          const id = body["id"] as string;
+          const pw = body["pw"] as string;
+          const userResult = await dbRepo.getUser(id, pw);
+          if (userResult == null) {
+            response.body = { result: false, msg: "auth fail" };
+            return;
+          }
+
+          nick = userResult["nick"] as string;
+        }
 
         const result = await dbRepo.createPosts(
           type,

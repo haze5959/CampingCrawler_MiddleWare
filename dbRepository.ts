@@ -14,16 +14,25 @@ class DBRepository {
   constructor() {
   }
 
+  async getUser(id: string, pw: string) {
+    const users = await client.query(`SELECT * FROM camp.users WHERE id="${id}" AND pw="${pw}";`);
+    return users.length > 0 ? users[0] : null;
+  }
+
   async getPosts(id: number) {
     const posts = await client.query(`SELECT * FROM camp.post WHERE id=${id};`);
-    const comments = await client.query(
-      `SELECT * FROM camp.comment WHERE post_id=${id};`,
-    );
-
-    return {
-      posts: posts[0],
-      comments: comments,
-    };
+    if (posts.length > 0) {
+      const comments = await client.query(
+        `SELECT * FROM camp.comment WHERE post_id=${id};`,
+      );
+  
+      return {
+        posts: posts[0],
+        comments: comments,
+      };
+    } else {
+      return null;
+    }
   }
 
   async getHomePosts() {
