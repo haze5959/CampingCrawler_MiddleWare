@@ -94,8 +94,8 @@ class DBRepository {
   async createComment(postId: number, nick: string, comment: string) {
     return await client.transaction(async (conn) => {
       await conn.execute(
-        `INSERT INTO camp.comment (post_id, nick, comment)
-      values(${postId}, "${nick}", "${comment}");`,
+        `INSERT INTO camp.comment (post_id, nick, comment, edit_time)
+      values(${postId}, "${nick}", "${comment}", now());`,
       );
 
       return await conn.execute(
