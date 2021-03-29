@@ -3,6 +3,7 @@ import { RedisRepository } from "./redisRepository.ts";
 import { DBRepository } from "./dbRepository.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { siteInfo } from "./SiteInfo.ts";
+import { mailerObj } from "./smtpClient.ts";
 
 const router = new Router();
 const redisRepo = new RedisRepository();
@@ -161,6 +162,23 @@ router
         } else {
           response.body = { result: false, msg: "not excuted" };
         }
+      } catch (error) {
+        console.error(error);
+        response.body = { result: false, msg: error };
+      }
+    } else {
+      response.body = { result: false, msg: "no params." };
+    }
+  })
+  .post("/report", async ({ request, response, params }) => {
+    if (request.hasBody) {
+      try {
+        const body = await request.body({ type: "json" }).value;
+        const id = body["id"] as string;
+        const bodyStr = body["body"] as string;
+
+        await mailerObj("[명당캠핑] 🤬 신고 - " + id, bodyStr);
+        response.body = { result: true, msg: "" };
       } catch (error) {
         console.error(error);
         response.body = { result: false, msg: error };
