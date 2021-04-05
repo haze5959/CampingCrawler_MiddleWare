@@ -23,7 +23,7 @@ class DBRepository {
     const posts = await client.query(`SELECT * FROM camp.post WHERE id=${id};`);
     if (posts.length > 0) {
       const comments = await client.query(
-        `SELECT * FROM camp.comment WHERE post_id=${id} ORDER BY DESC;`,
+        `SELECT * FROM camp.comment WHERE post_id=${id} ORDER BY id DESC;`,
       );
   
       return {
@@ -39,10 +39,10 @@ class DBRepository {
     const amountOfPage = 5;
 
     const notice = await client.query(
-      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=0 Limit 0, ${amountOfPage} ORDER BY DESC;`,
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=0 Limit 0, ${amountOfPage} ORDER BY id DESC;`,
     );
     const posts = await client.query(
-      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type!=0 Limit 0, ${amountOfPage} ORDER BY DESC;`,
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type!=0 Limit 0, ${amountOfPage} ORDER BY id DESC;`,
     );
 
     return {
@@ -56,7 +56,7 @@ class DBRepository {
 
     if (typeArr.length == 0) {
       return await client.query(
-        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post ORDER BY DESC Limit ${amountOfPage *
+        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post ORDER BY id DESC Limit ${amountOfPage *
           page}, ${amountOfPage};`,
       );
     } else {
@@ -65,7 +65,7 @@ class DBRepository {
       const sqlFilter = typeArr.reduce(reducer, `type=${Number(first)}`)
 
       return await client.query(
-        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE ${sqlFilter} ORDER BY DESC Limit ${amountOfPage *
+        `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE ${sqlFilter} ORDER BY id DESC Limit ${amountOfPage *
           page}, ${amountOfPage};`,
       );
     }
