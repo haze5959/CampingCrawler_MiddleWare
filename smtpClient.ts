@@ -16,7 +16,6 @@ let mailerObj = async (title: string, body: string) => {
     subject: title,
     content: body,
   });
-  await client.close();
 };
 
 export { mailerObj };

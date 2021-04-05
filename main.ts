@@ -155,9 +155,6 @@ router
         const postId = body["post_id"] as number;
         const nick = body["nick"] as string;
         const comment = body["comment"] as string;
-        console.log("postId: " + postId);
-        console.log("nick: " + nick);
-        console.log("comment: " + comment);
 
         const result = await dbRepo.createComment(postId, nick, comment);
         if (result.affectedRows != null) {
@@ -179,8 +176,6 @@ router
         const body = await request.body({ type: "json" }).value;
         const id = body["id"] as string;
         const bodyStr = body["body"] as string;
-        console.log("id: " + id);
-        console.log("bodyStr: " + bodyStr);
 
         await mailerObj("[명당캠핑] 🤬 신고 - " + id, bodyStr);
         response.body = { result: true, msg: "" };
