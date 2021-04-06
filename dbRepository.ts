@@ -39,10 +39,10 @@ class DBRepository {
     const amountOfPage = 5;
 
     const notice = await client.query(
-      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=0 Limit 0, ${amountOfPage} ORDER BY id DESC;`,
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type=0 ORDER BY id DESC Limit 0, ${amountOfPage};`,
     );
     const posts = await client.query(
-      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type!=0 Limit 0, ${amountOfPage} ORDER BY id DESC;`,
+      `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE type!=0 ORDER BY id DESC Limit 0, ${amountOfPage};`,
     );
 
     return {
