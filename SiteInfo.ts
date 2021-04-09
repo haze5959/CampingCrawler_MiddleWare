@@ -11,7 +11,7 @@ const siteInfo = {
       "area": CampArea.gyeonggi,
       "homepage_url": "https://munsugolcamping.com/",
       "reservation_url": "https://forcamper.co.kr/campgrounds/1758",
-      "reservation_open": "매일 3개월 지난 날"
+      "reservation_open": "3개월 전"
     },
     "camp_tree": {
       "name": "트리캠핑장 B & C 존",
@@ -23,7 +23,7 @@ const siteInfo = {
       "homepage_url": "http://www.treecamping.net/",
       "reservation_url":
           "https://www.ddnayo.com/RsvSys/Calendar.aspx?id_hotel=1997",
-      "reservation_open": "매일 2개월 지난 날"
+      "reservation_open": "2개월 전"
     },
   };
 
