@@ -1,11 +1,11 @@
+import "https://deno.land/x/dotenv/load.ts";
 import { connect } from "https://deno.land/x/redis/mod.ts";
-import { RedisAccount } from "./redisAccount.ts";
-import { CampInfo, CampArea } from "./CampInfoModel.ts";
+import { CampInfo, CampArea } from "../models/campInfo.ts";
 
 const redis = await connect({
-  hostname: RedisAccount.host,
-  port: RedisAccount.port,
-  password: RedisAccount.pw,
+  hostname: Deno.env.get("REDIS_HOST") as string,
+  port: Deno.env.get("REDIS_PORT"),
+  password: Deno.env.get("REDIS_PW"),
 });
 
 const campSiteKeys = {
@@ -68,4 +68,6 @@ class RedisRepository {
   }
 }
 
-export { RedisRepository };
+const redisRepo = new RedisRepository();
+
+export { redisRepo };

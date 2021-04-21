@@ -1,12 +1,12 @@
+import "https://deno.land/x/dotenv/load.ts";
 import { Client } from "https://deno.land/x/mysql/mod.ts";
-import { DBAccount } from "./redisAccount.ts";
 
 const client = await new Client();
 
 client.connect({
-  hostname: DBAccount.host,
-  username: DBAccount.id,
-  password: DBAccount.pw,
+  hostname: Deno.env.get("DB_HOST"),
+  username: Deno.env.get("DB_ID"),
+  password: Deno.env.get("DB_PW"),
   db: "",
 });
 
@@ -123,4 +123,6 @@ class DBRepository {
   }
 }
 
-export { DBRepository };
+const dbRepo = new DBRepository();
+
+export { dbRepo };
