@@ -1,6 +1,10 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
-import { getCamp, getCampList, getCampSiteInfo } from "./controllers/camp.ts";
+import {
+  getCampAvailDates,
+  getCampAvailDatesList,
+  getCampSiteInfo,
+} from "./controllers/camp.ts";
 import { reportMail } from "./controllers/user.ts";
 import {
   deleteComment,
@@ -18,17 +22,22 @@ router
   .get("/", (context) => {
     context.response.body = "hi~";
   })
-  .get("/camp", getCampList)
-  .get("/camp/:id", getCamp)
+  // 캠프 관련
+  .get("/camp", getCampAvailDatesList)
+  .get("/camp/:id", getCampAvailDates)
   .get("/info", getCampSiteInfo)
+
+  // 포스트 관련
   .get("/home", getHomePosts)
   .get("/post/:id", getPosts)
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)
-  .post("/comment", postComment)
-  .post("/report", reportMail)
+  .post("/comment", postComment) 
   .delete("/post", deletePosts)
-  .delete("/comment", deleteComment);
+  .delete("/comment", deleteComment)
+
+  // 유저 관련
+  .post("/report", reportMail)
 
 const app = new Application();
 app.use(oakCors({ origin: "*" }));

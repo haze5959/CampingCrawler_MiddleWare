@@ -15,7 +15,9 @@ class DBRepository {
   }
 
   async getUser(id: string, pw: string) {
-    const users = await client.query(`SELECT * FROM camp.users WHERE id="${id}" AND pw="${pw}";`);
+    const users = await client.query(
+      `SELECT * FROM camp.users WHERE id="${id}" AND pw="${pw}";`,
+    );
     return users.length > 0 ? users[0] : null;
   }
 
@@ -25,7 +27,7 @@ class DBRepository {
       const comments = await client.query(
         `SELECT * FROM camp.comment WHERE post_id=${id} ORDER BY id DESC;`,
       );
-  
+
       return {
         posts: posts[0],
         comments: comments,
@@ -47,7 +49,7 @@ class DBRepository {
 
     return {
       "notice": notice,
-      "posts": posts
+      "posts": posts,
     };
   }
 
@@ -60,9 +62,10 @@ class DBRepository {
           page}, ${amountOfPage};`,
       );
     } else {
-      const reducer = (acc: string, curr: string) => acc + ` OR type=${Number(curr)}`;
+      const reducer = (acc: string, curr: string) =>
+        acc + ` OR type=${Number(curr)}`;
       const first = typeArr.pop();
-      const sqlFilter = typeArr.reduce(reducer, `type=${Number(first)}`)
+      const sqlFilter = typeArr.reduce(reducer, `type=${Number(first)}`);
 
       return await client.query(
         `SELECT id, type, title, nick, edit_time, comment_count FROM camp.post WHERE ${sqlFilter} ORDER BY id DESC Limit ${amountOfPage *

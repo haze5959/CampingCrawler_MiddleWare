@@ -1,4 +1,4 @@
-class CampInfo {
+export class CampAvailDates {
   name: string;
   availDates: string[] | undefined;
   updatedDate: string | undefined;
@@ -14,7 +14,7 @@ class CampInfo {
   }
 }
 
-enum CampArea {
+export enum CampArea {
   seoul = "CampArea.seoul",
   gyeonggi = "CampArea.gyeonggi",
   inchoen = "CampArea.inchoen",
@@ -23,5 +23,3 @@ enum CampArea {
   gangwon = "CampArea.gangwon",
   etc = "CampArea.etc",
 }
-
-export { CampInfo, CampArea };

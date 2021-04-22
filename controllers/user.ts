@@ -2,6 +2,10 @@
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { mailerObj } from "../utils/smtpClient.ts";
 
+function authCheck(auth: string) {
+  
+}
+
 export const reportMail = async ({
   request,
   response,
@@ -20,5 +24,26 @@ export const reportMail = async ({
     }
   } else {
     response.body = { result: false, msg: "no params." };
+  }
+};
+
+export const getFavorite = async ({
+  request,
+  response,
+  params
+}: RouterContext) => {
+  if (params && params.auth) {
+    const auth = params.auth;
+    const typeArr: string[] = request.url.searchParams.getAll("type");
+
+    try {
+      const info = await dbRepo.getPostsWith(page, typeArr);
+      response.body = { result: true, msg: "", data: info };
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
   }
 };

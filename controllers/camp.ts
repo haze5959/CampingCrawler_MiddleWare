@@ -2,14 +2,14 @@ import { redisRepo } from "../repository/redisRepository.ts";
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { siteInfo } from "../repository/siteInfo.ts";
 
-export const getCampList = async ({
+export const getCampAvailDatesList = async ({
   request,
   response,
 }: RouterContext) => {
   const queryParams = request.url.searchParams.getAll("area");
 
   try {
-    const infos = await redisRepo.getCampSpotInfoWithIn(queryParams);
+    const infos = await redisRepo.getCampAvailDatesWithIn(queryParams);
     const infoJson = infos.map((value) => {
       const json = {
         "site": value.name,
@@ -27,14 +27,14 @@ export const getCampList = async ({
   }
 };
 
-export const getCamp = async ({
+export const getCampAvailDates = async ({
   response,
   params,
 }: RouterContext) => {
   if (params && params.id) {
     const campKey: string = params.id;
     try {
-      const info = await redisRepo.getCampSpotInfo(campKey);
+      const info = await redisRepo.getCampAvailDates(campKey);
       const json = {
         "site": info.name,
         "availDates": info.availDates,

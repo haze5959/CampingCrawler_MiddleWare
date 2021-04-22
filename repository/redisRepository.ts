@@ -1,6 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { connect } from "https://deno.land/x/redis/mod.ts";
-import { CampInfo, CampArea } from "../models/campInfo.ts";
+import { CampArea, CampAvailDates } from "../models/campInfo.ts";
 
 const redis = await connect({
   hostname: Deno.env.get("REDIS_HOST") as string,
@@ -9,26 +9,26 @@ const redis = await connect({
 });
 
 const campSiteKeys = {
-  [CampArea.seoul]: <string[]>[],
+  [CampArea.seoul]: <string[]> [],
   [CampArea.gyeonggi]: ["camp_munsoo"],
   [CampArea.inchoen]: ["camp_tree"],
-  [CampArea.chungnam]: <string[]>[],
-  [CampArea.chungbuk]: <string[]>[],
-  [CampArea.gangwon]: <string[]>[],
-  [CampArea.etc]: <string[]>[]
-}
+  [CampArea.chungnam]: <string[]> [],
+  [CampArea.chungbuk]: <string[]> [],
+  [CampArea.gangwon]: <string[]> [],
+  [CampArea.etc]: <string[]> [],
+};
 
 class RedisRepository {
   constructor() {
   }
 
-  async getAllCampSpotInfo(): Promise<Array<CampInfo>> {
-    var compInfoArr = Array<CampInfo>();
+  async getAllCampAvailDates(): Promise<Array<CampAvailDates>> {
+    var compInfoArr = Array<CampAvailDates>();
     for (const area in campSiteKeys) {
       try {
         for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
-          const campInfo = await this.getCampSpotInfo(site);
-          compInfoArr.push(campInfo);
+          const campAvailDates = await this.getCampAvailDates(site);
+          compInfoArr.push(campAvailDates);
         }
       } catch (error) {
         console.error(error);
@@ -38,16 +38,18 @@ class RedisRepository {
     return compInfoArr;
   }
 
-  async getCampSpotInfoWithIn(areaArr: Array<string>): Promise<Array<CampInfo>> {
+  async getCampAvailDatesWithIn(
+    areaArr: Array<string>,
+  ): Promise<Array<CampAvailDates>> {
     if (areaArr.length == 0) {
-      return this.getAllCampSpotInfo()
+      return this.getAllCampAvailDates();
     }
 
-    var compInfoArr = Array<CampInfo>();
+    var compInfoArr = Array<CampAvailDates>();
     for (const area of areaArr) {
       try {
         for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
-          const campInfo = await this.getCampSpotInfo(site);
+          const campInfo = await this.getCampAvailDates(site);
           compInfoArr.push(campInfo);
         }
       } catch (error) {
@@ -58,13 +60,13 @@ class RedisRepository {
     return compInfoArr;
   }
 
-  async getCampSpotInfo(site: string): Promise<CampInfo> {
+  async getCampAvailDates(site: string): Promise<CampAvailDates> {
     const availDatesStr = await redis.hget(site, "availDates");
     const updateTime = await redis.hget(site, "updateTime");
 
-    const availDates = availDatesStr?.split(",")
+    const availDates = availDatesStr?.split(",");
 
-    return new CampInfo(site, availDates, updateTime);
+    return new CampAvailDates(site, availDates, updateTime);
   }
 }
 
