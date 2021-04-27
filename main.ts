@@ -5,7 +5,7 @@ import {
   getCampAvailDatesList,
   getCampSiteInfo,
 } from "./controllers/camp.ts";
-import { reportMail } from "./controllers/user.ts";
+import { deleteUser, getUser, reportMail } from "./controllers/user.ts";
 import {
   deleteComment,
   deletePosts,
@@ -35,6 +35,8 @@ router
   .delete("/post", deletePosts)
   .delete("/comment", deleteComment)
   // 유저 관련
+  .get("/user/:token", getUser)
+  .delete("/user/:token", deleteUser)
   .post("/report", reportMail);
 
 const app = new Application();
