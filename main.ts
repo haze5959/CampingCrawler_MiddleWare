@@ -26,18 +26,16 @@ router
   .get("/camp", getCampAvailDatesList)
   .get("/camp/:id", getCampAvailDates)
   .get("/info", getCampSiteInfo)
-
   // 포스트 관련
   .get("/home", getHomePosts)
   .get("/post/:id", getPosts)
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)
-  .post("/comment", postComment) 
+  .post("/comment", postComment)
   .delete("/post", deletePosts)
   .delete("/comment", deleteComment)
-
   // 유저 관련
-  .post("/report", reportMail)
+  .post("/report", reportMail);
 
 const app = new Application();
 app.use(oakCors({ origin: "*" }));
