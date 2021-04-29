@@ -1,13 +1,14 @@
-// import { dbRepo } from "../repository/dbRepository.ts";
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { mailerObj } from "../utils/smtpClient.ts";
+import { AuthInfo } from "../models/authInfo.ts";
+import { dbRepo } from "../repository/dbRepository.ts";
 
-async function getUID(token: string) {
+async function getAuthInfo(token: string) {
   try {
-    const res = await fetch("http://127.0.0.1:5000?token=" + token);
+    const res = await fetch("http://127.0.0.1:5000/" + token);
     const json = await res.json();
     if (json["result"].boolean) {
-      return json["data"];
+      return json as AuthInfo;
     } else {
       console.error(json["msg"]);
       return null;
@@ -25,9 +26,13 @@ export const getUser = async ({
 }: RouterContext) => {
   if (params && params.token) {
     const token: string = params.token;
-
-    const uid = await getUID(token);
-    console.log("uid - " + uid);
+    const authInfo = await getAuthInfo(token);
+    if (authInfo != null) {
+      const data = await dbRepo.getHomePosts();
+      authInfo.localId
+    } else {
+      response.body = { result: false, msg: "Auth Fail" };
+    }
   } else {
     response.body = { result: false, msg: "param fail" };
   }
@@ -42,7 +47,7 @@ export const deleteUser = async ({
     const token: string = params.token;
 
     try {
-      const res = await fetch("http://127.0.0.1:5000?token=" + token, {
+      const res = await fetch("http://127.0.0.1:5000/" + token, {
         method: "DELETE",
       });
       const json = await res.json();

@@ -10,6 +10,10 @@ client.connect({
   db: "",
 });
 
+interface DBRepository {
+  
+}
+
 class DBRepository {
   constructor() {
   }

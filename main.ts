@@ -19,9 +19,6 @@ import {
 const router = new Router();
 
 router
-  .get("/", (context) => {
-    context.response.body = "hi~";
-  })
   // 캠프 관련
   .get("/camp", getCampAvailDatesList)
   .get("/camp/:id", getCampAvailDates)
