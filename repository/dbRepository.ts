@@ -10,19 +10,8 @@ client.connect({
   db: "",
 });
 
-interface DBRepository {
-  
-}
-
-class DBRepository {
+class PostsRepository {
   constructor() {
-  }
-
-  async getUser(id: string, pw: string) {
-    const users = await client.query(
-      `SELECT * FROM camp.users WHERE id="${id}" AND pw="${pw}";`,
-    );
-    return users.length > 0 ? users[0] : null;
   }
 
   async getPosts(id: number) {
@@ -78,24 +67,24 @@ class DBRepository {
     }
   }
 
+  async getComment(id: number) {
+    const comments = await client.query(
+      `SELECT * FROM camp.comment WHERE id=${id};`,
+    );
+
+    return comments[0];
+  }
+
   async createPosts(
     type: number,
     title: string,
     body: string,
     nick: string,
-    secretKey: string | null,
   ) {
-    if (secretKey == null) {
-      return await client.execute(
-        `INSERT INTO camp.post (type, title, body, nick, edit_time, comment_count)
-      values(${type}, "${title}", "${body}", "${nick}", now(), 0);`,
-      );
-    } else {
-      return await client.execute(
-        `INSERT INTO camp.post (type, title, body, nick, edit_time, comment_count, secret_key)
-      values(${type}, "${title}", "${body}", "${nick}", now(), 0, "${secretKey}");`,
-      );
-    }
+    return await client.execute(
+      `INSERT INTO camp.post (type, title, body, nick, edit_time, comment_count)
+    values(${type}, "${title}", "${body}", "${nick}", now(), 0);`,
+    );
   }
 
   async createComment(postId: number, nick: string, comment: string) {
@@ -130,6 +119,19 @@ class DBRepository {
   }
 }
 
-const dbRepo = new DBRepository();
+class UserRepository {
+  constructor() {
+  }
 
-export { dbRepo };
+  async getUser(uid: string) {
+    const users = await client.query(
+      `SELECT * FROM camp.users WHERE uid="${uid}";`,
+    );
+    return users.length > 0 ? users[0] : null;
+  }
+}
+
+const postsRepo = new PostsRepository();
+const userRepo = new UserRepository();
+
+export { postsRepo, userRepo };

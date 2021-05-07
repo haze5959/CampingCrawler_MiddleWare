@@ -1,23 +1,7 @@
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { mailerObj } from "../utils/smtpClient.ts";
-import { AuthInfo } from "../models/authInfo.ts";
-import { dbRepo } from "../repository/dbRepository.ts";
-
-async function getAuthInfo(token: string) {
-  try {
-    const res = await fetch("http://127.0.0.1:5000/" + token);
-    const json = await res.json();
-    if (json["result"].boolean) {
-      return json as AuthInfo;
-    } else {
-      console.error(json["msg"]);
-      return null;
-    }
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
+import { getAuthInfo } from "../utils/auth.ts";
+import { userRepo } from "../repository/dbRepository.ts";
 
 // 유저 정보 가져오기
 export const getUser = async ({
@@ -28,8 +12,8 @@ export const getUser = async ({
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
     if (authInfo != null) {
-      const data = await dbRepo.getHomePosts();
-      authInfo.localId
+      const userResult = await userRepo.getUser(authInfo.localId);
+      response.body = { result: true, msg: "", data: userResult };
     } else {
       response.body = { result: false, msg: "Auth Fail" };
     }

@@ -1,11 +1,14 @@
-import { dbRepo } from "../repository/dbRepository.ts";
+import { postsRepo, userRepo } from "../repository/dbRepository.ts";
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { getAuthInfo } from "../utils/auth.ts";
+
+const emptyNick = "익명의 캠퍼";
 
 export const getHomePosts = async ({
   response,
 }: RouterContext) => {
   try {
-    const data = await dbRepo.getHomePosts();
+    const data = await postsRepo.getHomePosts();
     response.body = { result: true, msg: "", data: data };
   } catch (error) {
     console.error(error);
@@ -14,23 +17,32 @@ export const getHomePosts = async ({
 };
 
 export const getPosts = async ({
-  request,
   response,
   params,
 }: RouterContext) => {
   if (params && params.id) {
-    const page = Number(params.id);
+    const id = Number(params.id);
     try {
-      const info = await dbRepo.getPosts(page);
+      const info = await postsRepo.getPosts(id);
       if (info != null && info.posts["type"] == 3) {
-        const secretKey = request.url.searchParams.get("key");
-
-        if (info.posts["secret_key"] == secretKey) {
-          response.body = { result: true, msg: "", data: info };
+        if (params.token) {
+          const token = params.token;
+          const authInfo = await getAuthInfo(token);
+          if (authInfo == null) {
+            response.body = { result: false, msg: "auth fail" };
+            return;
+          } else {
+            const userResult = await userRepo.getUser(authInfo.localId);
+            const nick = userResult["nick"];
+            if (nick != info.posts["nick"]) {
+              response.body = { result: false, msg: "Auth Fail" };
+              return;
+            }
+          }
         } else {
-          response.body = { result: false, msg: "잘못된 비밀번호입니다." };
+          response.body = { result: false, msg: "Auth Fail" };
+          return;
         }
-        return;
       }
 
       response.body = { result: true, msg: "", data: info };
@@ -53,7 +65,7 @@ export const getPostsPage = async ({
     const typeArr: string[] = request.url.searchParams.getAll("type");
 
     try {
-      const info = await dbRepo.getPostsWith(page, typeArr);
+      const info = await postsRepo.getPostsWith(page, typeArr);
       response.body = { result: true, msg: "", data: info };
     } catch (error) {
       console.error(error);
@@ -74,27 +86,34 @@ export const postPosts = async ({
       const type = body["type"] as number;
       const title = body["title"] as string;
       const bodyVal = body["body"] as string;
-      let nick = body["nick"] as string;
-      const secretKey = body["secret_key"] as string | null;
+      const token = body["token"] as string | null;
+
+      let nick = emptyNick;
+      let level = 0;
+      if (token != null) {
+        const authInfo = await getAuthInfo(token);
+        if (authInfo == null) {
+          response.body = { result: false, msg: "auth fail" };
+          return;
+        } else {
+          const userResult = await userRepo.getUser(authInfo.localId);
+          nick = userResult["nick"];
+          level = userResult["level"];
+        }
+      }
 
       if (type == 0) { // 공지사항이라면
-        const id = body["id"] as string;
-        const pw = body["pw"] as string;
-        const userResult = await dbRepo.getUser(id, pw);
-        if (userResult == null) {
+        if (level < 2) {
           response.body = { result: false, msg: "auth fail" };
           return;
         }
-
-        nick = userResult["nick"] as string;
       }
 
-      const result = await dbRepo.createPosts(
+      const result = await postsRepo.createPosts(
         type,
         title,
         bodyVal,
         nick,
-        secretKey,
       );
 
       if (result.affectedRows != null) {
@@ -119,10 +138,22 @@ export const postComment = async ({
     try {
       const body = await request.body({ type: "json" }).value;
       const postId = body["post_id"] as number;
-      const nick = body["nick"] as string;
       const comment = body["comment"] as string;
+      const token = body["token"] as string | null;
 
-      const result = await dbRepo.createComment(postId, nick, comment);
+      let nick = emptyNick;
+      if (token != null) {
+        const authInfo = await getAuthInfo(token);
+        if (authInfo == null) {
+          response.body = { result: false, msg: "auth fail" };
+          return;
+        } else {
+          const userResult = await userRepo.getUser(authInfo.localId);
+          nick = userResult["nick"];
+        }
+      }
+
+      const result = await postsRepo.createComment(postId, nick, comment);
       if (result.affectedRows != null) {
         response.body = { result: true, msg: "" };
       } else {
@@ -145,8 +176,28 @@ export const deletePosts = async ({
     try {
       const body = await request.body({ type: "json" }).value;
       const id = body["id"] as number;
+      const token = body["token"] as string;
 
-      const result = await dbRepo.deletePosts(id);
+      const info = await postsRepo.getPosts(id);
+      if (info == null) {
+        response.body = { result: false, msg: "Posts is not existed." };
+        return;
+      }
+
+      const authInfo = await getAuthInfo(token);
+      if (authInfo == null) {
+        response.body = { result: false, msg: "auth fail" };
+        return;
+      } else {
+        const userResult = await userRepo.getUser(authInfo.localId);
+        const nick = userResult["nick"];
+        if (info.posts["nick"] != nick) {
+          response.body = { result: false, msg: "auth fail" };
+          return;
+        }
+      }
+
+      const result = await postsRepo.deletePosts(id);
       if (result.affectedRows != null) {
         response.body = { result: true, msg: "" };
       } else {
@@ -169,8 +220,28 @@ export const deleteComment = async ({
     try {
       const body = await request.body({ type: "json" }).value;
       const id = body["id"] as number;
+      const token = body["token"] as string;
 
-      const result = await dbRepo.deleteComment(id);
+      const comment = await postsRepo.getComment(id);
+      if (comment == null) {
+        response.body = { result: false, msg: "Comment is not existed." };
+        return;
+      }
+
+      const authInfo = await getAuthInfo(token);
+      if (authInfo == null) {
+        response.body = { result: false, msg: "auth fail" };
+        return;
+      } else {
+        const userResult = await userRepo.getUser(authInfo.localId);
+        const nick = userResult["nick"];
+        if (comment["nick"] != nick) {
+          response.body = { result: false, msg: "auth fail" };
+          return;
+        }
+      }
+
+      const result = await postsRepo.deleteComment(id);
       if (result.affectedRows != null) {
         response.body = { result: true, msg: "" };
       } else {
