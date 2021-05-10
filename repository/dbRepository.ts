@@ -129,6 +129,13 @@ class UserRepository {
     );
     return users.length > 0 ? users[0] : null;
   }
+
+  async getFavorite(uid: string) {
+    const favorites = await client.query(
+      `SELECT * FROM camp.favorite WHERE uid="${uid}";`,
+    );
+    return favorites;
+  }
 }
 
 const postsRepo = new PostsRepository();

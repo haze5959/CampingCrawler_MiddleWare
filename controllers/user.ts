@@ -72,23 +72,20 @@ export const reportMail = async ({
 };
 
 // 즐겨찾는 캠핑목록 가져오기
-// export const getFavorite = async ({
-//   request,
-//   response,
-//   params
-// }: RouterContext) => {
-//   if (params && params.auth) {
-//     const auth = params.auth;
-//     const typeArr: string[] = request.url.searchParams.getAll("type");
-
-//     try {
-//       const info = await dbRepo.getPostsWith(page, typeArr);
-//       response.body = { result: true, msg: "", data: info };
-//     } catch (error) {
-//       console.error(error);
-//       response.body = { result: false, msg: error };
-//     }
-//   } else {
-//     response.body = { result: false, msg: "param fail" };
-//   }
-// };
+export const getFavorite = async ({
+  response,
+  params
+}: RouterContext) => {
+  if (params && params.token) {
+    const token: string = params.token;
+    const authInfo = await getAuthInfo(token);
+    if (authInfo != null) {
+      const favorites = await userRepo.getFavorite(authInfo.localId);
+      response.body = { result: true, msg: "", data: favorites };
+    } else {
+      response.body = { result: false, msg: "Auth Fail" };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
+  }
+};
