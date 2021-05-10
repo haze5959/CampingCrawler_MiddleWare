@@ -32,7 +32,7 @@ export const getPosts = async ({
             response.body = { result: false, msg: "auth fail" };
             return;
           } else {
-            const userResult = await userRepo.getUser(authInfo.localId);
+            const userResult = await userRepo.getUser(authInfo.uid);
             const nick = userResult["nick"];
             if (nick != info.posts["nick"]) {
               response.body = { result: false, msg: "Auth Fail" };
@@ -96,7 +96,7 @@ export const postPosts = async ({
           response.body = { result: false, msg: "auth fail" };
           return;
         } else {
-          const userResult = await userRepo.getUser(authInfo.localId);
+          const userResult = await userRepo.getUser(authInfo.uid);
           nick = userResult["nick"];
           level = userResult["level"];
         }
@@ -148,7 +148,7 @@ export const postComment = async ({
           response.body = { result: false, msg: "auth fail" };
           return;
         } else {
-          const userResult = await userRepo.getUser(authInfo.localId);
+          const userResult = await userRepo.getUser(authInfo.uid);
           nick = userResult["nick"];
         }
       }
@@ -189,7 +189,7 @@ export const deletePosts = async ({
         response.body = { result: false, msg: "auth fail" };
         return;
       } else {
-        const userResult = await userRepo.getUser(authInfo.localId);
+        const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult["nick"];
         if (info.posts["nick"] != nick) {
           response.body = { result: false, msg: "auth fail" };
@@ -233,7 +233,7 @@ export const deleteComment = async ({
         response.body = { result: false, msg: "auth fail" };
         return;
       } else {
-        const userResult = await userRepo.getUser(authInfo.localId);
+        const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult["nick"];
         if (comment["nick"] != nick) {
           response.body = { result: false, msg: "auth fail" };

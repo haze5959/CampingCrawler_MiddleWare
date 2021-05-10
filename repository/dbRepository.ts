@@ -125,16 +125,27 @@ class UserRepository {
 
   async getUser(uid: string) {
     const users = await client.query(
-      `SELECT * FROM camp.users WHERE uid="${uid}";`,
+      `SELECT * FROM camp.user WHERE user_id="${uid}";`,
     );
     return users.length > 0 ? users[0] : null;
   }
 
   async getFavorite(uid: string) {
     const favorites = await client.query(
-      `SELECT * FROM camp.favorite WHERE uid="${uid}";`,
+      `SELECT * FROM camp.my_favorite WHERE user_id="${uid}";`,
     );
     return favorites;
+  }
+
+  async createUser(
+    uid: string,
+    nick: string,
+  ) {
+    const reulst = await client.execute(
+      `INSERT INTO camp.user (user_id, nick, auth_level)
+    values("${uid}", "${nick}", 0);`,
+    );
+    return reulst;
   }
 }
 

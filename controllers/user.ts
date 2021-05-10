@@ -12,10 +12,22 @@ export const getUser = async ({
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
     if (authInfo != null) {
-      const userResult = await userRepo.getUser(authInfo.localId);
-      response.body = { result: true, msg: "", data: userResult };
+      const userResult = await userRepo.getUser(authInfo.uid);
+      if (userResult == null) {
+        // 새 유저 등록하기
+        const name = authInfo.name ?? "캠퍼" + Date();
+        await userRepo.createUser(authInfo.uid, name);
+        const signUpResult = await userRepo.getUser(authInfo.uid);
+        if (signUpResult == null) {
+          response.body = { result: false, msg: "sign up fail" };
+        } else {
+          response.body = { result: true, msg: "sign up", data: userResult };
+        }
+      } else {
+        response.body = { result: true, msg: "", data: userResult };
+      }
     } else {
-      response.body = { result: false, msg: "Auth Fail" };
+      response.body = { result: false, msg: "auth fail" };
     }
   } else {
     response.body = { result: false, msg: "param fail" };
@@ -74,13 +86,13 @@ export const reportMail = async ({
 // 즐겨찾는 캠핑목록 가져오기
 export const getFavorite = async ({
   response,
-  params
+  params,
 }: RouterContext) => {
   if (params && params.token) {
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
     if (authInfo != null) {
-      const favorites = await userRepo.getFavorite(authInfo.localId);
+      const favorites = await userRepo.getFavorite(authInfo.uid);
       response.body = { result: true, msg: "", data: favorites };
     } else {
       response.body = { result: false, msg: "Auth Fail" };
