@@ -25,7 +25,7 @@ router
   .get("/info", getCampSiteInfo)
   // 포스트 관련
   .get("/home", getHomePosts)
-  .get("/post/:id", getPosts)
+  .get("/post/:id/:token", getPosts)
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)
   .post("/comment", postComment)
