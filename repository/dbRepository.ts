@@ -125,9 +125,20 @@ class UserRepository {
 
   async getUser(uid: string) {
     const users = await client.query(
-      `SELECT * FROM camp.user WHERE user_id="${uid}";`,
+      `SELECT user_id, nick, auth_level, area_bit FROM camp.user WHERE user_id="${uid}";`,
     );
     return users.length > 0 ? users[0] : null;
+  }
+
+  async getUserPushInfo(uid: string) {
+    const pushInfos = await client.query(
+      `SELECT 
+      area_bit, use_push_on_area, use_only_in_month_on_area, 
+      use_only_holiday_on_area, use_push_on_site, use_only_in_month_on_site, 
+      use_only_holiday_on_site, use_reservation_day_push 
+      FROM camp.user WHERE user_id="${uid}";`,
+    );
+    return pushInfos.length > 0 ? pushInfos[0] : null;
   }
 
   async getFavorite(uid: string) {

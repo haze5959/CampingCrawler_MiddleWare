@@ -83,6 +83,25 @@ export const reportMail = async ({
   }
 };
 
+// 푸시 정보 가져오기
+export const getPushInfo = async ({
+  response,
+  params,
+}: RouterContext) => {
+  if (params && params.token) {
+    const token: string = params.token;
+    const authInfo = await getAuthInfo(token);
+    if (authInfo != null) {
+      const pushInfo = await userRepo.getUserPushInfo(authInfo.uid);
+      response.body = { result: true, msg: "", data: pushInfo };
+    } else {
+      response.body = { result: false, msg: "Auth Fail" };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
+  }
+};
+
 // 즐겨찾는 캠핑목록 가져오기
 export const getFavorite = async ({
   response,
