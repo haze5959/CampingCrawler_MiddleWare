@@ -166,7 +166,8 @@ class UserRepository {
       `SELECT COUNT(*) as length FROM camp.user WHERE nick="${nick}";`,
     );
 
-    console.log("checkUserNick: " + results);
+    console.log("checkUserNick1: " + results.length);
+    console.log("checkUserNick2: " + results["length"]);
     return results.length > 0;
   }
 
