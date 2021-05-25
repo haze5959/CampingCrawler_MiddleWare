@@ -174,7 +174,7 @@ class UserRepository {
     nick: string,
   ) {
     const reulst = await client.execute(
-      `UPDATE camp.user SET nick=?? WHERE user_id=?;`, [nick, uid]
+      `UPDATE camp.user SET nick = ? WHERE user_id = ?`, [nick, uid]
     );
     return reulst;
   }
