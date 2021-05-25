@@ -166,9 +166,7 @@ class UserRepository {
       `SELECT COUNT(*) as length FROM camp.user WHERE nick="${nick}";`,
     );
       
-    console.log("checkUserNick1: " + JSON.stringify(results));
-    console.log("checkUserNick2: " + results[0]);
-    return results.length > 0;
+    return results[0]["length"] > 0;
   }
 
   async updateUserNick(
