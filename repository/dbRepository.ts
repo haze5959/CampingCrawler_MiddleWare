@@ -158,6 +158,27 @@ class UserRepository {
     );
     return reulst;
   }
+
+  async checkUserNick(
+    nick: string,
+  ) {
+    const results = await client.query(
+      `SELECT COUNT(*) as length FROM camp.user WHERE nick="${nick}";`,
+    );
+
+    console.log("checkUserNick: " + results);
+    return results.length > 0;
+  }
+
+  async updateUserNick(
+    uid: string,
+    nick: string,
+  ) {
+    const reulst = await client.execute(
+      `UPDATE camp.user SET nick="${nick}" WHERE user_id="${uid}";`,
+    );
+    return reulst;
+  }
 }
 
 const postsRepo = new PostsRepository();

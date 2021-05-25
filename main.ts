@@ -5,7 +5,7 @@ import {
   getCampAvailDatesList,
   getCampSiteInfo,
 } from "./controllers/camp.ts";
-import { getUser, getPushInfo, getFavorite, deleteUser, reportMail } from "./controllers/user.ts";
+import { getUser, getPushInfo, getFavorite, deleteUser, reportMail, putUserNick } from "./controllers/user.ts";
 import {
   deleteComment,
   deletePosts,
@@ -35,6 +35,7 @@ router
   .get("/user/:token", getUser)
   .get("/user/push/:token", getPushInfo)
   .get("/user/favorite:token", getFavorite)
+  .put("/user/nick", putUserNick)
   .delete("/user/:token", deleteUser)
   .post("/report", reportMail);
 

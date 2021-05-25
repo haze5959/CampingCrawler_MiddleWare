@@ -120,3 +120,32 @@ export const getFavorite = async ({
     response.body = { result: false, msg: "param fail" };
   }
 };
+
+export const putUserNick = async ({
+  response,
+  params,
+}: RouterContext) => {
+  if (params && params.token && params.nick) {
+    const token: string = params.token;
+    const nick: string = params.nick;
+
+    const authInfo = await getAuthInfo(token);
+    if (authInfo != null) {
+      const isExist = await userRepo.checkUserNick(nick);
+      if (isExist) {
+        response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
+      } else {
+        const result = await userRepo.updateUserNick(token, nick);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      }
+    } else {
+      response.body = { result: false, msg: "Auth Fail" };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
+  }
+};
