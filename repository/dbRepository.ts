@@ -165,9 +165,9 @@ class UserRepository {
     const results = await client.query(
       `SELECT COUNT(*) as length FROM camp.user WHERE nick="${nick}";`,
     );
-
-    console.log("checkUserNick1: " + results.length);
-    console.log("checkUserNick2: " + results["length"]);
+      
+    console.log("checkUserNick1: " + JSON.stringify(results));
+    console.log("checkUserNick2: " + results[0]);
     return results.length > 0;
   }
 
