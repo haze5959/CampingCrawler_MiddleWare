@@ -138,6 +138,7 @@ export const putUserNick = async ({
           response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
         } else {
           const result = await userRepo.updateUserNick(token, nick);
+          console.log(result);
           if (result.affectedRows != null) {
             response.body = { result: true, msg: "" };
           } else {
