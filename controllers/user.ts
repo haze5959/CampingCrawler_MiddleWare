@@ -122,28 +122,34 @@ export const getFavorite = async ({
 };
 
 export const putUserNick = async ({
+  request,
   response,
-  params,
 }: RouterContext) => {
-  if (params && params.token && params.nick) {
-    const token: string = params.token;
-    const nick: string = params.nick;
+  if (request.hasBody) {
+    try {
+      const body = await request.body({ type: "json" }).value;
+      const token = body["token"] as string;
+      const nick = body["nick"] as string;
 
-    const authInfo = await getAuthInfo(token);
-    if (authInfo != null) {
-      const isExist = await userRepo.checkUserNick(nick);
-      if (isExist) {
-        response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
-      } else {
-        const result = await userRepo.updateUserNick(token, nick);
-        if (result.affectedRows != null) {
-          response.body = { result: true, msg: "" };
+      const authInfo = await getAuthInfo(token);
+      if (authInfo != null) {
+        const isExist = await userRepo.checkUserNick(nick);
+        if (isExist) {
+          response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
         } else {
-          response.body = { result: false, msg: "not excuted" };
+          const result = await userRepo.updateUserNick(token, nick);
+          if (result.affectedRows != null) {
+            response.body = { result: true, msg: "" };
+          } else {
+            response.body = { result: false, msg: "not excuted" };
+          }
         }
+      } else {
+        response.body = { result: false, msg: "Auth Fail" };
       }
-    } else {
-      response.body = { result: false, msg: "Auth Fail" };
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
     }
   } else {
     response.body = { result: false, msg: "param fail" };
