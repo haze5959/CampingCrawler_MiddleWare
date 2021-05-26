@@ -125,9 +125,20 @@ class UserRepository {
 
   async getUser(uid: string) {
     const users = await client.query(
-      `SELECT * FROM camp.user WHERE user_id="${uid}";`,
+      `SELECT user_id, nick, auth_level, area_bit FROM camp.user WHERE user_id="${uid}";`,
     );
     return users.length > 0 ? users[0] : null;
+  }
+
+  async getUserPushInfo(uid: string) {
+    const pushInfos = await client.query(
+      `SELECT 
+      area_bit, use_push_on_area, use_only_in_month_on_area, 
+      use_only_holiday_on_area, use_push_on_site, use_only_in_month_on_site, 
+      use_only_holiday_on_site, use_reservation_day_push 
+      FROM camp.user WHERE user_id="${uid}";`,
+    );
+    return pushInfos.length > 0 ? pushInfos[0] : null;
   }
 
   async getFavorite(uid: string) {
@@ -144,6 +155,26 @@ class UserRepository {
     const reulst = await client.execute(
       `INSERT INTO camp.user (user_id, nick, auth_level)
     values("${uid}", "${nick}", 0);`,
+    );
+    return reulst;
+  }
+
+  async checkUserNick(
+    nick: string,
+  ) {
+    const results = await client.query(
+      `SELECT COUNT(*) as length FROM camp.user WHERE nick="${nick}";`,
+    );
+      
+    return results[0]["length"] > 0;
+  }
+
+  async updateUserNick(
+    uid: string,
+    nick: string,
+  ) {
+    const reulst = await client.execute(
+      `UPDATE camp.user SET nick = ? WHERE user_id = ?`, [nick, uid]
     );
     return reulst;
   }

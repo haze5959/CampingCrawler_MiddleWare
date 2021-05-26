@@ -34,7 +34,7 @@ export const getUser = async ({
   }
 };
 
-export const putUser = async ({
+export const putUserNick = async ({
   request,
   response,
 }: RouterContext) => {
@@ -42,16 +42,60 @@ export const putUser = async ({
     try {
       const body = await request.body({ type: "json" }).value;
       const token = body["token"] as string;
-      const updateInfo = body["update_info"];
-      const authInfo = await getAuthInfo(token);
+      const nick = body["nick"] as string;
 
-      response.body = { result: true, msg: "" };
+      const authInfo = await getAuthInfo(token);
+      if (authInfo != null) {
+        const isExist = await userRepo.checkUserNick(nick);
+        if (isExist) {
+          response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
+        } else {
+          const result = await userRepo.updateUserNick(authInfo.uid, nick);
+          if (result.affectedRows != null) {
+            response.body = { result: true, msg: "" };
+          } else {
+            response.body = { result: false, msg: "not excuted" };
+          }
+        }
+      } else {
+        response.body = { result: false, msg: "Auth Fail" };
+      }
     } catch (error) {
       console.error(error);
       response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "no params." };
+    response.body = { result: false, msg: "param fail" };
+  }
+};
+
+export const putUserArea = async ({
+  request,
+  response,
+}: RouterContext) => {
+  if (request.hasBody) {
+    try {
+      const body = await request.body({ type: "json" }).value;
+      const token = body["token"] as string;
+      const areaBit = body["area_bit"] as string;
+
+      const authInfo = await getAuthInfo(token);
+      if (authInfo != null) {
+        // const result = await userRepo.updateUserNick(authInfo.uid, nick);
+        // if (result.affectedRows != null) {
+        //   response.body = { result: true, msg: "" };
+        // } else {
+        //   response.body = { result: false, msg: "not excuted" };
+        // }
+      } else {
+        response.body = { result: false, msg: "Auth Fail" };
+      }
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
   }
 };
 
@@ -101,6 +145,25 @@ export const reportMail = async ({
     }
   } else {
     response.body = { result: false, msg: "no params." };
+  }
+};
+
+// 푸시 정보 가져오기
+export const getPushInfo = async ({
+  response,
+  params,
+}: RouterContext) => {
+  if (params && params.token) {
+    const token: string = params.token;
+    const authInfo = await getAuthInfo(token);
+    if (authInfo != null) {
+      const pushInfo = await userRepo.getUserPushInfo(authInfo.uid);
+      response.body = { result: true, msg: "", data: pushInfo };
+    } else {
+      response.body = { result: false, msg: "Auth Fail" };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
   }
 };
 
