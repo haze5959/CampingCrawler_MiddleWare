@@ -178,6 +178,16 @@ class UserRepository {
     );
     return reulst;
   }
+
+  async updateUserArea(
+    uid: string,
+    areaBit: number,
+  ) {
+    const reulst = await client.execute(
+      `UPDATE camp.user SET area_bit = ? WHERE user_id = ?`, [areaBit, uid]
+    );
+    return reulst;
+  }
 }
 
 const postsRepo = new PostsRepository();

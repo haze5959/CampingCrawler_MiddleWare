@@ -77,16 +77,16 @@ export const putUserArea = async ({
     try {
       const body = await request.body({ type: "json" }).value;
       const token = body["token"] as string;
-      const areaBit = body["area_bit"] as string;
+      const areaBit = body["area_bit"] as number;
 
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
-        // const result = await userRepo.updateUserNick(authInfo.uid, nick);
-        // if (result.affectedRows != null) {
-        //   response.body = { result: true, msg: "" };
-        // } else {
-        //   response.body = { result: false, msg: "not excuted" };
-        // }
+        const result = await userRepo.updateUserArea(authInfo.uid, areaBit);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
       } else {
         response.body = { result: false, msg: "Auth Fail" };
       }
