@@ -3,13 +3,13 @@ import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { siteInfo } from "../repository/siteInfo.ts";
 
 export const getCampAvailDatesList = async ({
-  request,
   response,
+  params
 }: RouterContext) => {
-  const queryParams = request.url.searchParams.getAll("area");
+  const areaBit = Number(params.area_bit) ?? 0;
 
   try {
-    const infos = await redisRepo.getCampAvailDatesWithIn(queryParams);
+    const infos = await redisRepo.getCampAvailDatesWithIn(areaBit);
     const infoJson = infos.map((value) => {
       const json = {
         "site": value.name,

@@ -1,6 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { connect } from "https://deno.land/x/redis/mod.ts";
-import { CampArea, CampAvailDates } from "../models/campInfo.ts";
+import { CampArea, CampAvailDates, numToCampArea } from "../models/campInfo.ts";
 
 const redis = await connect({
   hostname: Deno.env.get("REDIS_HOST") as string,
@@ -39,14 +39,15 @@ class RedisRepository {
   }
 
   async getCampAvailDatesWithIn(
-    areaArr: Array<string>,
+    areaBit: number,
   ): Promise<Array<CampAvailDates>> {
-    if (areaArr.length == 0) {
+    if (areaBit == 0) {
       return this.getAllCampAvailDates();
     }
 
+    const campAreaArr = numToCampArea(areaBit);
     var compInfoArr = Array<CampAvailDates>();
-    for (const area of areaArr) {
+    for (const area of campAreaArr) {
       try {
         for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
           const campInfo = await this.getCampAvailDates(site);

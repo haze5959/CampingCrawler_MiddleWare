@@ -34,6 +34,27 @@ export const getUser = async ({
   }
 };
 
+export const putUser = async ({
+  request,
+  response,
+}: RouterContext) => {
+  if (request.hasBody) {
+    try {
+      const body = await request.body({ type: "json" }).value;
+      const token = body["token"] as string;
+      const updateInfo = body["update_info"];
+      const authInfo = await getAuthInfo(token);
+
+      response.body = { result: true, msg: "" };
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "no params." };
+  }
+};
+
 // 유저 삭제하기
 export const deleteUser = async ({
   response,
