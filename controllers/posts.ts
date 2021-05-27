@@ -58,9 +58,7 @@ export const getPostsPage = async ({
 }: RouterContext) => {
   if (params && params.page) {
     const page = Number(params.page);
-    console.log("aaaa - " + page);
     const typeArr: string[] = request.url.searchParams.getAll("type");
-    console.log("bbbb - " + typeArr);
     try {
       const info = await postsRepo.getPostsWith(page, typeArr);
       response.body = { result: true, msg: "", data: info };
