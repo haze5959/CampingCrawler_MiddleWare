@@ -6,7 +6,7 @@ export const getCampAvailDatesList = async ({
   request,
   response
 }: RouterContext) => {
-  const areaBit: number = request.url.searchParams.get("area_bit");
+  const areaBit = Number(request.url.searchParams.get("area_bit")) ?? 0;
   console.log("areaBit - " + areaBit);
 
   try {
