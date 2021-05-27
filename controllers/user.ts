@@ -185,3 +185,63 @@ export const getFavorite = async ({
     response.body = { result: false, msg: "param fail" };
   }
 };
+
+export const putFavorite = async ({
+  request,
+  response,
+}: RouterContext) => {
+  if (request.hasBody) {
+    try {
+      const body = await request.body({ type: "json" }).value;
+      const token = body["token"] as string;
+      const campId = body["camp_id"] as string;
+
+      const authInfo = await getAuthInfo(token);
+      if (authInfo != null) {
+        const result = await userRepo.createUserFavorite(authInfo.uid, campId);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      } else {
+        response.body = { result: false, msg: "Auth Fail" };
+      }
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
+  }
+};
+
+export const deleteFavorite = async ({
+  request,
+  response,
+  params,
+}: RouterContext) => {
+  if (params && params.token) {
+    try {
+      const token: string = params.token;
+      const campId: string = request.url.searchParams.get("camp_id");
+
+      const authInfo = await getAuthInfo(token);
+      if (authInfo != null) {
+        const result = await userRepo.deleteUserFavorite(authInfo.uid, campId);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
+        } else {
+          response.body = { result: false, msg: "not excuted" };
+        }
+      } else {
+        response.body = { result: false, msg: "Auth Fail" };
+      }
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "param fail" };
+  }
+};

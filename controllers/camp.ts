@@ -3,11 +3,10 @@ import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { siteInfo } from "../repository/siteInfo.ts";
 
 export const getCampAvailDatesList = async ({
-  response,
-  params
+  request,
+  response
 }: RouterContext) => {
-  console.log("params.area_bit - " + params.area_bit);
-  const areaBit = Number(params.area_bit) ?? 0;
+  const areaBit: number = request.url.searchParams.get("area_bit");
   console.log("areaBit - " + areaBit);
 
   try {

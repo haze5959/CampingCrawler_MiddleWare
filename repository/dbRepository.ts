@@ -165,7 +165,7 @@ class UserRepository {
     const results = await client.query(
       `SELECT COUNT(*) as length FROM camp.user WHERE nick="${nick}";`,
     );
-      
+
     return results[0]["length"] > 0;
   }
 
@@ -174,7 +174,8 @@ class UserRepository {
     nick: string,
   ) {
     const reulst = await client.execute(
-      `UPDATE camp.user SET nick = ? WHERE user_id = ?`, [nick, uid]
+      `UPDATE camp.user SET nick = ? WHERE user_id = ?`,
+      [nick, uid],
     );
     return reulst;
   }
@@ -184,9 +185,30 @@ class UserRepository {
     areaBit: number,
   ) {
     const reulst = await client.execute(
-      `UPDATE camp.user SET area_bit = ? WHERE user_id = ?`, [areaBit, uid]
+      `UPDATE camp.user SET area_bit = ? WHERE user_id = ?`,
+      [areaBit, uid],
     );
     return reulst;
+  }
+
+  async createUserFavorite(
+    uid: string,
+    campId: string,
+  ) {
+    const reulst = await client.execute(
+      `INSERT INTO camp.favorite (user_id, camp_id)
+    values("${uid}", "${campId}");`,
+    );
+    return reulst;
+  }
+
+  async deleteUserFavorite(
+    uid: string,
+    campId: string,
+  ) {
+    return await client.execute(
+      `DELETE FROM camp.favorite WHERE user_id=${uid} AND camp_id=${campId};`,
+    );
   }
 }
 
