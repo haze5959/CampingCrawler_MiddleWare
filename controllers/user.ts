@@ -224,7 +224,7 @@ export const deleteFavorite = async ({
   if (params && params.token) {
     try {
       const token: string = params.token;
-      const campId: string = request.url.searchParams.get("camp_id");
+      const campId = request.url.searchParams.get("camp_id") as string;
 
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
