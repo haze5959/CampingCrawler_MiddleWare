@@ -11,7 +11,7 @@ import {
   getFavorite,
   getPushInfo,
   getUser,
-  putFavorite,
+  postFavorite,
   putUserArea,
   putUserNick,
   reportMail,
@@ -35,7 +35,7 @@ router
   .get("/info", getCampSiteInfo)
   // 포스트 관련
   .get("/home", getHomePosts)
-  .get("/post/:id/:token", getPosts)
+  .get("/post/:id", getPosts)
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)
   .post("/comment", postComment)
@@ -47,7 +47,7 @@ router
   .put("/user/nick", putUserNick)
   .get("/user/push/:token", getPushInfo)
   .get("/user/favorite/:token", getFavorite)
-  .put("/user/favorite", putFavorite)
+  .post("/user/favorite", postFavorite)
   .delete("/user/favorite/:token", deleteFavorite)
   .delete("/user/:token", deleteUser)
   .post("/report", reportMail);

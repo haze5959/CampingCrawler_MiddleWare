@@ -186,7 +186,7 @@ export const getFavorite = async ({
   }
 };
 
-export const putFavorite = async ({
+export const postFavorite = async ({
   request,
   response,
 }: RouterContext) => {

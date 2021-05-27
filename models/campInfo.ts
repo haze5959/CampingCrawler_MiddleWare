@@ -50,22 +50,22 @@ export function numToCampArea(bit: number): CampArea[] {
 
   while (bit > 0) {
     if (bit >= campAreatoBit(CampArea.gangwon)) {
-      bit = -campAreatoBit(CampArea.gangwon);
+      bit -= campAreatoBit(CampArea.gangwon);
       areaArr.push(CampArea.gangwon);
     } else if (bit >= campAreatoBit(CampArea.chungbuk)) {
-      bit = -campAreatoBit(CampArea.chungbuk);
+      bit -= campAreatoBit(CampArea.chungbuk);
       areaArr.push(CampArea.chungbuk);
     } else if (bit >= campAreatoBit(CampArea.chungnam)) {
-      bit = -campAreatoBit(CampArea.chungnam);
+      bit -= campAreatoBit(CampArea.chungnam);
       areaArr.push(CampArea.chungnam);
     } else if (bit >= campAreatoBit(CampArea.inchoen)) {
-      bit = -campAreatoBit(CampArea.inchoen);
+      bit -= campAreatoBit(CampArea.inchoen);
       areaArr.push(CampArea.inchoen);
     } else if (bit >= campAreatoBit(CampArea.gyeonggi)) {
-      bit = -campAreatoBit(CampArea.gyeonggi);
+      bit -= campAreatoBit(CampArea.gyeonggi);
       areaArr.push(CampArea.gyeonggi);
     } else if (bit >= campAreatoBit(CampArea.seoul)) {
-      bit = -campAreatoBit(CampArea.seoul);
+      bit -= campAreatoBit(CampArea.seoul);
       areaArr.push(CampArea.seoul);
     }
   }

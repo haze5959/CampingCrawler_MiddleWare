@@ -17,6 +17,7 @@ export const getHomePosts = async ({
 };
 
 export const getPosts = async ({
+  request,
   response,
   params,
 }: RouterContext) => {
@@ -25,23 +26,18 @@ export const getPosts = async ({
     try {
       const info = await postsRepo.getPosts(id);
       if (info != null && info.posts["type"] == 3) {
-        if (params.token) {
-          const token = params.token;
-          const authInfo = await getAuthInfo(token);
-          if (authInfo == null) {
-            response.body = { result: false, msg: "auth fail" };
-            return;
-          } else {
-            const userResult = await userRepo.getUser(authInfo.uid);
-            const nick = userResult["nick"];
-            if (nick != info.posts["nick"]) {
-              response.body = { result: false, msg: "Auth Fail" };
-              return;
-            }
-          }
-        } else {
-          response.body = { result: false, msg: "Auth Fail" };
+        const token = request.url.searchParams.get("token") as string;
+        const authInfo = await getAuthInfo(token);
+        if (authInfo == null) {
+          response.body = { result: false, msg: "auth fail" };
           return;
+        } else {
+          const userResult = await userRepo.getUser(authInfo.uid);
+          const nick = userResult["nick"];
+          if (nick != info.posts["nick"]) {
+            response.body = { result: false, msg: "Auth Fail" };
+            return;
+          }
         }
       }
 
@@ -62,8 +58,9 @@ export const getPostsPage = async ({
 }: RouterContext) => {
   if (params && params.page) {
     const page = Number(params.page);
+    console.log("aaaa - " + page);
     const typeArr: string[] = request.url.searchParams.getAll("type");
-
+    console.log("bbbb - " + typeArr);
     try {
       const info = await postsRepo.getPostsWith(page, typeArr);
       response.body = { result: true, msg: "", data: info };
