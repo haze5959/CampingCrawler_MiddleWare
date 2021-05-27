@@ -6,7 +6,9 @@ export const getCampAvailDatesList = async ({
   response,
   params
 }: RouterContext) => {
+  console.log("params.area_bit - " + params.area_bit);
   const areaBit = Number(params.area_bit) ?? 0;
+  console.log("areaBit - " + areaBit);
 
   try {
     const infos = await redisRepo.getCampAvailDatesWithIn(areaBit);
