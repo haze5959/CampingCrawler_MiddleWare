@@ -1,22 +1,13 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { connect } from "https://deno.land/x/redis/mod.ts";
-import { CampArea, CampAvailDates, numToCampArea } from "../models/campInfo.ts";
+import { CampAvailDates, numToCampArea } from "../models/campInfo.ts";
+import { campSiteKeys } from "../repository/siteInfo.ts";
 
 const redis = await connect({
   hostname: Deno.env.get("REDIS_HOST") as string,
   port: Deno.env.get("REDIS_PORT"),
   password: Deno.env.get("REDIS_PW"),
 });
-
-const campSiteKeys = {
-  [CampArea.seoul]: <string[]> [],
-  [CampArea.gyeonggi]: ["camp_munsoo"],
-  [CampArea.inchoen]: ["camp_tree"],
-  [CampArea.chungnam]: <string[]> [],
-  [CampArea.chungbuk]: <string[]> [],
-  [CampArea.gangwon]: <string[]> [],
-  [CampArea.etc]: <string[]> [],
-};
 
 class RedisRepository {
   constructor() {
