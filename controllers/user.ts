@@ -15,7 +15,13 @@ export const getUser = async ({
       const userResult = await userRepo.getUser(authInfo.uid);
       if (userResult == null) {
         // 새 유저 등록하기
-        const name = authInfo.name ?? "캠퍼" + Date();
+        let name = authInfo.name ?? "캠퍼" + makeid(8);
+
+        const isExist = await userRepo.checkUserNick(name);
+        if (isExist) {
+          name = name + makeid(6)
+        }
+
         await userRepo.createUser(authInfo.uid, name);
         const signUpResult = await userRepo.getUser(authInfo.uid);
         if (signUpResult == null) {
@@ -33,6 +39,20 @@ export const getUser = async ({
     response.body = { result: false, msg: "param fail" };
   }
 };
+
+function makeid(length: number): string {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(
+      Math.random() *
+        charactersLength,
+    ));
+  }
+  return result;
+}
 
 export const putUserNick = async ({
   request,
