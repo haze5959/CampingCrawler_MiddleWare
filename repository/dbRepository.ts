@@ -206,7 +206,7 @@ class UserRepository {
     campId: string,
   ) {
     const reulst = await client.execute(
-      `INSERT INTO camp.favorite (user_id, camp_id)
+      `INSERT INTO camp.my_favorite (user_id, camp_id)
     values("${uid}", "${campId}");`,
     );
     return reulst;
@@ -217,7 +217,10 @@ class UserRepository {
     campId: string,
   ) {
     return await client.execute(
-      `DELETE FROM camp.favorite WHERE user_id=${uid} AND camp_id=${campId};`,
+      `DELETE FROM camp.my_favorite WHERE id IN (
+        SELECT id FROM camp.my_favorite WHERE user_id = ? AND camp_id = ?
+        )`,
+      [uid, campId],
     );
   }
 }
