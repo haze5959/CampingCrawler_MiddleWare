@@ -11,15 +11,15 @@ export const getUser = async ({
   if (params && params.token) {
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
+    
     if (authInfo != null) {
       const userResult = await userRepo.getUser(authInfo.uid);
       if (userResult == null) {
         // 새 유저 등록하기
-        let name = authInfo.name ?? "캠퍼" + makeid(8);
-
+        let name = authInfo.name ?? "캠퍼" + "_" + makeid(8);
         const isExist = await userRepo.checkUserNick(name);
         if (isExist) {
-          name = name + makeid(6)
+          name = name  + "_" + makeid(6)
         }
 
         await userRepo.createUser(authInfo.uid, name);
@@ -27,7 +27,7 @@ export const getUser = async ({
         if (signUpResult == null) {
           response.body = { result: false, msg: "sign up fail" };
         } else {
-          response.body = { result: true, msg: "sign up", data: userResult };
+          response.body = { result: true, msg: "sign up", data: signUpResult };
         }
       } else {
         response.body = { result: true, msg: "", data: userResult };
@@ -128,11 +128,13 @@ export const deleteUser = async ({
     const token: string = params.token;
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/" + token, {
+      const res = await fetch("http://192.168.0.2:5000/" + token, {
         method: "DELETE",
       });
       const json = await res.json();
-      if (json["result"].boolean) {
+      if (json["result"]) { 
+        const uid: string = json["uid"];
+        await userRepo.deleteUser(uid);
         response.body = { result: true, msg: "" };
       } else {
         response.body = { result: false, msg: json["msg"] };
