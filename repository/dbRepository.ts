@@ -136,7 +136,7 @@ class UserRepository {
   async getUser(uid: string) {
     const users = await client.query(
       `SELECT user_id, nick, auth_level, area_bit, use_push_area_on_holiday, 
-      use_push_site_on_holiday, use_push_reserbation_day, use_push_notice 
+      use_push_site_on_holiday, use_push_reservation_day, use_push_notice 
       FROM camp.user WHERE user_id="${uid}";`,
     );
     return users.length > 0 ? users[0] : null;
@@ -146,7 +146,7 @@ class UserRepository {
     const pushInfos = await client.query(
       `SELECT 
       area_bit, use_push_area_on_holiday, 
-      use_push_site_on_holiday, use_push_reserbation_day, use_push_notice
+      use_push_site_on_holiday, use_push_reservation_day, use_push_notice
       FROM camp.user WHERE user_id="${uid}";`,
     );
     return pushInfos.length > 0 ? pushInfos[0] : null;
@@ -166,6 +166,15 @@ class UserRepository {
     const reulst = await client.execute(
       `INSERT INTO camp.user (user_id, nick, auth_level)
     values("${uid}", "${nick}", 0);`,
+    );
+    return reulst;
+  }
+
+  async deleteUser(
+    uid: string,
+  ) {
+    const reulst = await client.execute(
+      `DELETE FROM camp.user WHERE user_id="${uid}";`,
     );
     return reulst;
   }
@@ -207,7 +216,7 @@ class UserRepository {
     campId: string,
   ) {
     const reulst = await client.execute(
-      `INSERT INTO camp.favorite (user_id, camp_id)
+      `INSERT INTO camp.my_favorite (user_id, camp_id)
     values("${uid}", "${campId}");`,
     );
     return reulst;
@@ -218,7 +227,10 @@ class UserRepository {
     campId: string,
   ) {
     return await client.execute(
-      `DELETE FROM camp.favorite WHERE user_id=${uid} AND camp_id=${campId};`,
+      `DELETE FROM camp.my_favorite WHERE id IN (
+        SELECT id FROM camp.my_favorite WHERE user_id = ? AND camp_id = ?
+        )`,
+      [uid, campId],
     );
   }
 }
