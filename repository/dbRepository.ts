@@ -147,7 +147,7 @@ class UserRepository {
       `SELECT 
       area_bit, use_push_area_on_holiday, 
       use_push_site_on_holiday, use_push_reservation_day, use_push_notice
-      FROM camp.user WHERE user_id="${uid}";`,
+      FROM camp.user user, camp.push push WHERE user.user_id="${uid}" AND push.id="${uid}";`,
     );
     return pushInfos.length > 0 ? pushInfos[0] : null;
   }
