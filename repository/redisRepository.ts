@@ -10,7 +10,12 @@ const redis = await connect({
 });
 
 class RedisRepository {
-  constructor() {
+  private static _instance = new RedisRepository();
+  private constructor() {
+  }
+
+  static get instance() {
+    return this._instance;
   }
 
   async getAllCampAvailDates(): Promise<Array<CampAvailDates>> {
@@ -62,6 +67,6 @@ class RedisRepository {
   }
 }
 
-const redisRepo = new RedisRepository();
+const redisRepo = RedisRepository.instance;
 
 export { redisRepo };

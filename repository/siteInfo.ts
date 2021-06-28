@@ -125,6 +125,28 @@ const siteInfo = {
     "reservation_url": "https://camp.xticket.kr/web/main?shopEncode=3ca13d7e35f571dd445d29950216553a5ece8a50aa56784c7a287e2f4f438131",
     "reservation_open": "매월 5일 9시",
   },
+  "camp_chungjuho_normal": {
+    "name": "충주호 캠핑월드 일반",
+    "desc": "안가봤음",
+    "addr": "충북 충주시 동량면 호반로 696-1",
+    "lat": 37.02770184190392,
+    "lon": 128.04159762175996,
+    "area": CampArea.chungbuk,
+    "homepage_url": "http://xn--hy1bt45akrb1yhl9ax3wfrb.com",
+    "reservation_url": "http://cjcampingworld.bit-plus.com/bbs/board.php?bo_table=b4x2&sca=%EC%9D%BC%EB%B0%98",
+    "reservation_open": "매년",
+  },
+  "camp_chungjuho_single": {
+    "name": "충주호 캠핑월드 단독",
+    "desc": "안가봤음",
+    "addr": "충북 충주시 동량면 호반로 696-1",
+    "lat": 37.02770184190392,
+    "lon": 128.04159762175996,
+    "area": CampArea.chungbuk,
+    "homepage_url": "http://xn--hy1bt45akrb1yhl9ax3wfrb.com",
+    "reservation_url": "http://cjcampingworld.bit-plus.com/bbs/board.php?bo_table=b4x2&sca=%EC%9D%BC%EB%B0%98",
+    "reservation_open": "매년",
+  },
 };
 
 const campSiteKeys = {
@@ -132,7 +154,7 @@ const campSiteKeys = {
   [CampArea.gyeonggi]: ["camp_munsoo", "camp_munsoosan", "camp_5emotion", "camp_5emotion_king"],
   [CampArea.inchoen]: ["camp_tree", "camp_metro"],
   [CampArea.chungnam]: <string[]> [],
-  [CampArea.chungbuk]: <string[]> [],
+  [CampArea.chungbuk]: <string[]> ["camp_chungjuho_normal", "camp_chungjuho_single"],
   [CampArea.gangwon]: <string[]> [],
   [CampArea.etc]: <string[]> [],
 };

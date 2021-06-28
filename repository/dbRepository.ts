@@ -11,7 +11,12 @@ client.connect({
 });
 
 class PostsRepository {
-  constructor() {
+  private static _instance = new PostsRepository();
+  private constructor() {
+  }
+
+  static get instance() {
+    return this._instance;
   }
 
   async getPosts(id: number) {
@@ -120,7 +125,12 @@ class PostsRepository {
 }
 
 class UserRepository {
-  constructor() {
+  private static _instance = new UserRepository();
+  private constructor() {
+  }
+
+  static get instance() {
+    return this._instance;
   }
 
   async getUser(uid: string) {
@@ -213,7 +223,7 @@ class UserRepository {
   }
 }
 
-const postsRepo = new PostsRepository();
-const userRepo = new UserRepository();
+const postsRepo = PostsRepository.instance;
+const userRepo = UserRepository.instance;
 
 export { postsRepo, userRepo };
