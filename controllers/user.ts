@@ -11,7 +11,7 @@ export const getUser = async ({
   if (params && params.token) {
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
-    
+
     if (authInfo != null) {
       const userResult = await userRepo.getUser(authInfo.uid);
       if (userResult == null) {
@@ -19,7 +19,7 @@ export const getUser = async ({
         let name = authInfo.name ?? "캠퍼" + "_" + makeid(8);
         const isExist = await userRepo.checkUserNick(name);
         if (isExist) {
-          name = name  + "_" + makeid(6)
+          name = name + "_" + makeid(6);
         }
 
         await userRepo.createUser(authInfo.uid, name);
@@ -64,18 +64,21 @@ export const putUserNick = async ({
       const token = body["token"] as string;
       const nick = body["nick"] as string;
 
+      const isExist = await userRepo.checkUserNick(nick);
+      if (isExist) {
+        response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
+        return;
+      }
+
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
-        const isExist = await userRepo.checkUserNick(nick);
-        if (isExist) {
-          response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
+        const userResult = await userRepo.getUser(authInfo.uid);
+        const oldNick = userResult["nick"];
+        const result = await userRepo.updateUserNick(authInfo.uid, nick, oldNick);
+        if (result.affectedRows != null) {
+          response.body = { result: true, msg: "" };
         } else {
-          const result = await userRepo.updateUserNick(authInfo.uid, nick);
-          if (result.affectedRows != null) {
-            response.body = { result: true, msg: "" };
-          } else {
-            response.body = { result: false, msg: "not excuted" };
-          }
+          response.body = { result: false, msg: "not excuted" };
         }
       } else {
         response.body = { result: false, msg: "Auth Fail" };
@@ -132,7 +135,7 @@ export const deleteUser = async ({
         method: "DELETE",
       });
       const json = await res.json();
-      if (json["result"]) { 
+      if (json["result"]) {
         const uid: string = json["uid"];
         await userRepo.deleteUser(uid);
         response.body = { result: true, msg: "" };

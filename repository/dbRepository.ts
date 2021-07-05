@@ -192,11 +192,23 @@ class UserRepository {
   async updateUserNick(
     uid: string,
     nick: string,
+    oldNick: string,
   ) {
-    const reulst = await client.execute(
-      `UPDATE camp.user SET nick = ? WHERE user_id = ?`,
-      [nick, uid],
-    );
+    const reulst = await client.transaction(async (conn) => {
+      await conn.execute(
+        `UPDATE camp.post SET nick = ? WHERE nick = ?`,
+        [nick, oldNick],
+      );
+      await conn.execute(
+        `UPDATE camp.comment SET nick = ? WHERE nick = ?`,
+        [nick, oldNick],
+      );
+      return await conn.execute(
+        `UPDATE camp.user SET nick = ? WHERE user_id = ?`,
+        [nick, uid],
+      );
+    });
+
     return reulst;
   }
 
