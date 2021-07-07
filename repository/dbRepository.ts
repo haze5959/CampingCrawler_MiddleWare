@@ -135,7 +135,7 @@ class UserRepository {
 
   async getUser(uid: string) {
     const users = await client.query(
-      `SELECT user_id, nick, auth_level, area_bit, use_push_area_on_holiday, 
+      `SELECT nick, auth_level, area_bit, use_push_area_on_holiday, 
       use_push_site_on_holiday, use_push_reservation_day, use_push_notice 
       FROM camp.user WHERE user_id="${uid}";`,
     );
