@@ -23,10 +23,10 @@ export const getPosts = async ({
 }: RouterContext) => {
   if (params && params.id) {
     const id = Number(params.id);
+    const token = request.url.searchParams.get("token") as string;
     try {
       const info = await postsRepo.getPosts(id);
       if (info != null && info.posts["type"] == 3) {
-        const token = request.url.searchParams.get("token") as string;
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
           response.body = { result: false, msg: "auth fail" };
