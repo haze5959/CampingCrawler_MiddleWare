@@ -134,6 +134,26 @@ class UserRepository {
   }
 
   async getUser(uid: string) {
+    `SELECT * FROM camp.my_favorite WHERE user_id="${uid}";`
+
+    const users = await client.query(
+      `SELECT nick, auth_level, area_bit, use_push_area_on_holiday, 
+      use_push_site_on_holiday, use_push_reservation_day, use_push_notice 
+      FROM camp.user 
+      WHERE user_id="${uid}";`,
+    );
+
+    const favorites = await client.query(
+      `SELECT * FROM camp.my_favorite WHERE user_id="${uid}";`,
+    );
+
+    return users.length > 0 ? {
+      "user": users[0],
+      "favorite": favorites
+    } : null;
+  }
+
+  async getUserWithFavorite(uid: string) {
     const users = await client.query(
       `SELECT nick, auth_level, area_bit, use_push_area_on_holiday, 
       use_push_site_on_holiday, use_push_reservation_day, use_push_notice 
