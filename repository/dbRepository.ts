@@ -134,7 +134,7 @@ class UserRepository {
   }
 
   async getUser(uid: string) {
-    `SELECT * FROM camp.my_favorite WHERE user_id="${uid}";`
+    `SELECT camp_id FROM camp.my_favorite WHERE user_id="${uid}";`
 
     const users = await client.query(
       `SELECT nick, auth_level, area_bit, use_push_area_on_holiday, 
