@@ -33,7 +33,7 @@ export const getPosts = async ({
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          const nick = userResult["nick"];
+          const nick = userResult?.user["nick"];
           if (nick != info.posts["nick"]) {
             response.body = { result: false, msg: "Auth Fail" };
             return;
@@ -92,8 +92,8 @@ export const postPosts = async ({
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          nick = userResult["nick"];
-          level = userResult["level"];
+          nick = userResult?.user["nick"];
+          level = userResult?.user["level"];
         }
       }
 
@@ -144,7 +144,7 @@ export const postComment = async ({
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          nick = userResult["nick"];
+          nick = userResult?.user["nick"];
         }
       }
 
@@ -185,7 +185,7 @@ export const deletePosts = async ({
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
-        const nick = userResult["nick"];
+        const nick = userResult?.user["nick"];
         if (info.posts["nick"] != nick) {
           response.body = { result: false, msg: "auth fail" };
           return;
@@ -229,7 +229,7 @@ export const deleteComment = async ({
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
-        const nick = userResult["nick"];
+        const nick = userResult?.user["nick"];
         if (comment["nick"] != nick) {
           response.body = { result: false, msg: "auth fail" };
           return;
