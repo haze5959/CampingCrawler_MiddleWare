@@ -134,8 +134,6 @@ class UserRepository {
   }
 
   async getUser(uid: string) {
-    `SELECT camp_id FROM camp.my_favorite WHERE user_id="${uid}";`
-
     const users = await client.query(
       `SELECT nick, auth_level, area_bit, use_push_area_on_holiday, 
       use_push_site_on_holiday, use_push_reservation_day, use_push_notice 
@@ -143,23 +141,17 @@ class UserRepository {
       WHERE user_id="${uid}";`,
     );
 
-    const favorites = await client.query(
-      `SELECT * FROM camp.my_favorite WHERE user_id="${uid}";`,
+    const favorites: [{camp_id: string}] = await client.query(
+      `SELECT camp_id FROM camp.my_favorite WHERE user_id="${uid}";`,
     );
 
-    return users.length > 0 ? {
-      "user": users[0],
-      "favorite": favorites
-    } : null;
-  }
-
-  async getUserWithFavorite(uid: string) {
-    const users = await client.query(
-      `SELECT nick, auth_level, area_bit, use_push_area_on_holiday, 
-      use_push_site_on_holiday, use_push_reservation_day, use_push_notice 
-      FROM camp.user WHERE user_id="${uid}";`,
-    );
-    return users.length > 0 ? users[0] : null;
+    const favoriteArr = favorites.map(val => val.camp_id)
+    return users.length > 0
+      ? {
+        "user": users[0],
+        "favorite": favoriteArr,
+      }
+      : null;
   }
 
   async getUserPushInfo(uid: string) {
@@ -173,10 +165,12 @@ class UserRepository {
   }
 
   async getFavorite(uid: string) {
-    const favorites = await client.query(
-      `SELECT * FROM camp.my_favorite WHERE user_id="${uid}";`,
+    const favorites: [{camp_id: string}] = await client.query(
+      `SELECT camp_id FROM camp.my_favorite WHERE user_id="${uid}";`,
     );
-    return favorites;
+
+    const favoriteArr = favorites.map(val => val.camp_id)
+    return favoriteArr;
   }
 
   async createUser(
