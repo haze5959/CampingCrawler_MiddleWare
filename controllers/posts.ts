@@ -168,7 +168,7 @@ export const deletePosts = async ({
   response,
   params,
 }: RouterContext) => {
-  if (request.hasBody) {
+  if (params && params.token) {
     try {
       const token: string = params.token;
       const id = Number(request.url.searchParams.get("id"));
@@ -203,7 +203,7 @@ export const deletePosts = async ({
       response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "no params." };
+    response.body = { result: false, msg: "param fail" };
   }
 };
 
@@ -212,7 +212,7 @@ export const deleteComment = async ({
   response,
   params,
 }: RouterContext) => {
-  if (request.hasBody) {
+  if (params && params.token) {
     try {
       const token: string = params.token;
       const id = Number(request.url.searchParams.get("id"));
@@ -247,6 +247,6 @@ export const deleteComment = async ({
       response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "no params." };
+    response.body = { result: false, msg: "param fail" };
   }
 };
