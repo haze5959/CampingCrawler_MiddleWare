@@ -171,7 +171,7 @@ export const deletePosts = async ({
   if (request.hasBody) {
     try {
       const token: string = params.token;
-      const id = request.url.searchParams.get("id") as number;
+      const id = Number(request.url.searchParams.get("id"));
 
       const info = await postsRepo.getPosts(id);
       if (info == null) {
@@ -215,7 +215,7 @@ export const deleteComment = async ({
   if (request.hasBody) {
     try {
       const token: string = params.token;
-      const id = request.url.searchParams.get("id") as number;
+      const id = Number(request.url.searchParams.get("id"));
 
       const comment = await postsRepo.getComment(id);
       if (comment == null) {
