@@ -166,12 +166,12 @@ export const postComment = async ({
 export const deletePosts = async ({
   request,
   response,
+  params,
 }: RouterContext) => {
   if (request.hasBody) {
     try {
-      const body = await request.body({ type: "json" }).value;
-      const id = body["id"] as number;
-      const token = body["token"] as string;
+      const token: string = params.token;
+      const id = request.url.searchParams.get("id") as number;
 
       const info = await postsRepo.getPosts(id);
       if (info == null) {
@@ -210,12 +210,12 @@ export const deletePosts = async ({
 export const deleteComment = async ({
   request,
   response,
+  params,
 }: RouterContext) => {
   if (request.hasBody) {
     try {
-      const body = await request.body({ type: "json" }).value;
-      const id = body["id"] as number;
-      const token = body["token"] as string;
+      const token: string = params.token;
+      const id = request.url.searchParams.get("id") as number;
 
       const comment = await postsRepo.getComment(id);
       if (comment == null) {
