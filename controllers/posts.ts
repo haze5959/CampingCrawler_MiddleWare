@@ -216,6 +216,7 @@ export const deleteComment = async ({
     try {
       const token: string = params.token;
       const id = Number(request.url.searchParams.get("id"));
+      const postId = Number(request.url.searchParams.get("post_id"));
 
       const comment = await postsRepo.getComment(id);
       if (comment == null) {
@@ -236,7 +237,7 @@ export const deleteComment = async ({
         }
       }
 
-      const result = await postsRepo.deleteComment(id);
+      const result = await postsRepo.deleteComment(id, postId);
       if (result.affectedRows != null) {
         response.body = { result: true, msg: "" };
       } else {
