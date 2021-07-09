@@ -117,10 +117,16 @@ class PostsRepository {
     });
   }
 
-  async deleteComment(id: number) {
-    return await client.execute(
-      `DELETE FROM camp.comment WHERE id=${id};`,
-    );
+  async deleteComment(id: number, postId: number) {
+    return await client.transaction(async (conn) => {
+      await conn.execute(
+        `UPDATE camp.post SET comment_count=comment_count-1 WHERE id=${postId};`,
+      );
+
+      return await conn.execute(
+        `DELETE FROM camp.comment WHERE id=${id};`,
+      );
+    });
   }
 }
 
@@ -141,11 +147,11 @@ class UserRepository {
       WHERE user_id="${uid}";`,
     );
 
-    const favorites: [{camp_id: string}] = await client.query(
+    const favorites: [{ camp_id: string }] = await client.query(
       `SELECT camp_id FROM camp.my_favorite WHERE user_id="${uid}";`,
     );
 
-    const favoriteArr = favorites.map(val => val.camp_id)
+    const favoriteArr = favorites.map((val) => val.camp_id);
     return users.length > 0
       ? {
         "user": users[0],
@@ -165,11 +171,11 @@ class UserRepository {
   }
 
   async getFavorite(uid: string) {
-    const favorites: [{camp_id: string}] = await client.query(
+    const favorites: [{ camp_id: string }] = await client.query(
       `SELECT camp_id FROM camp.my_favorite WHERE user_id="${uid}";`,
     );
 
-    const favoriteArr = favorites.map(val => val.camp_id)
+    const favoriteArr = favorites.map((val) => val.camp_id);
     return favoriteArr;
   }
 
@@ -253,8 +259,8 @@ class UserRepository {
     campId: string,
   ) {
     return await client.execute(
-      `DELETE FROM camp.my_favorite WHERE id IN (
-        SELECT id FROM camp.my_favorite WHERE user_id = ? AND camp_id = ?
+      `DELETE FROM camp.my_favorite WHERE camp_id IN (
+        SELECT camp_id FROM camp.my_favorite WHERE user_id = ? AND camp_id = ?
         )`,
       [uid, campId],
     );
