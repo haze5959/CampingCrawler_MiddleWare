@@ -39,8 +39,8 @@ router
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)
   .post("/comment", postComment)
-  .delete("/post", deletePosts)
-  .delete("/comment", deleteComment)
+  .delete("/post/:token", deletePosts)
+  .delete("/comment/:token", deleteComment)
   // 유저 관련
   .get("/user/:token", getUser)
   .put("/user/area", putUserArea)
