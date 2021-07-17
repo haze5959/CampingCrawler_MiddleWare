@@ -1,4 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { monthly } from "https://deno.land/x/deno_cron/cron.ts";
+import { singleton } from "./utils/singleton.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import {
   getCampAvailDates,
@@ -56,6 +58,12 @@ const app = new Application();
 app.use(oakCors({ origin: "*" }));
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+// 서버 시작할때랑 월마다 공휴일 업데이트
+singleton.updateHolidayInFourMonth();
+monthly(() => {
+  singleton.updateHolidayInFourMonth();
+}, 1);
 
 console.info("CAMP_MIDDLEWARE Start!!");
 

@@ -1,10 +1,11 @@
 import { redisRepo } from "../repository/redisRepository.ts";
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { singleton } from "../utils/singleton.ts";
 import { siteInfo } from "../repository/siteInfo.ts";
 
 export const getCampAvailDatesList = async ({
   request,
-  response
+  response,
 }: RouterContext) => {
   const areaBit = Number(request.url.searchParams.get("area_bit")) ?? 0;
 
@@ -20,7 +21,12 @@ export const getCampAvailDatesList = async ({
       return json;
     });
 
-    response.body = { result: true, msg: "", data: infoJson };
+    response.body = {
+      result: true,
+      msg: "",
+      data: infoJson,
+      holiday: singleton.holidaysInFourMonth,
+    };
   } catch (error) {
     console.error(error);
     response.body = { result: false, msg: error };
@@ -41,7 +47,12 @@ export const getCampAvailDates = async ({
         "updatedDate": info.updatedDate,
       };
 
-      response.body = { result: true, msg: "", data: json };
+      response.body = {
+        result: true,
+        msg: "",
+        data: json,
+        holiday: singleton.holidaysInFourMonth,
+      };
     } catch (error) {
       response.body = { result: false, msg: error };
     }
