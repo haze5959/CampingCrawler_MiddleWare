@@ -65,6 +65,15 @@ class RedisRepository {
 
     return new CampAvailDates(site, availDates, updateTime);
   }
+
+  async getCampAvailDatesDatail(site: string): Promise<CampAvailDates> {
+    const availDatesStr = await redis.hget(site, "availDetailDates");
+    const updateTime = await redis.hget(site, "updateTime");
+
+    const availDates = availDatesStr?.split(",");
+
+    return new CampAvailDates(site, availDates, updateTime);
+  }
 }
 
 const redisRepo = RedisRepository.instance;

@@ -3,7 +3,7 @@ import { monthly } from "https://deno.land/x/deno_cron/cron.ts";
 import { singleton } from "./utils/singleton.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import {
-  getCampAvailDates,
+  getCampAvailDatesDatail,
   getCampAvailDatesList,
   getCampSiteInfo,
 } from "./controllers/camp.ts";
@@ -33,7 +33,7 @@ const router = new Router();
 router
   // 캠프 관련
   .get("/camp", getCampAvailDatesList)
-  .get("/camp/:id", getCampAvailDates)
+  .get("/camp/:id", getCampAvailDatesDatail)
   .get("/info", getCampSiteInfo)
   // 포스트 관련
   .get("/home", getHomePosts)
