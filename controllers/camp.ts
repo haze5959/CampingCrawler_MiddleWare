@@ -24,8 +24,7 @@ export const getCampAvailDatesList = async ({
     response.body = {
       result: true,
       msg: "",
-      data: infoJson,
-      holiday: singleton.holidaysInFourMonth,
+      data: { "camps": infoJson, "holiday": singleton.holidaysInFourMonth },
     };
   } catch (error) {
     console.error(error);
@@ -50,8 +49,7 @@ export const getCampAvailDates = async ({
       response.body = {
         result: true,
         msg: "",
-        data: json,
-        holiday: singleton.holidaysInFourMonth,
+        data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
       };
     } catch (error) {
       response.body = { result: false, msg: error };
@@ -78,8 +76,7 @@ export const getCampAvailDatesDatail = async ({
       response.body = {
         result: true,
         msg: "",
-        data: json,
-        holiday: singleton.holidaysInFourMonth,
+        data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
       };
     } catch (error) {
       response.body = { result: false, msg: error };
