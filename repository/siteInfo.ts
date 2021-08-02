@@ -22,7 +22,7 @@ const siteInfo = {
     "area": CampArea.gyeonggi,
     "homepage_url": "https://munsugolcamping.com/",
     "reservation_url": "https://forcamper.co.kr/campgrounds/1758",
-    "reservation_open": "D///M/3",  // 매일 (3개월 이후 자리 오픈)
+    "reservation_open": "D///M/1",  // 매일 (1개월 이후 자리 오픈)
   },
   "camp_tree": {
     "name": "트리캠핑장 B & C 존",
@@ -34,7 +34,7 @@ const siteInfo = {
     "homepage_url": "http://www.treecamping.net/",
     "reservation_url":
       "https://www.ddnayo.com/RsvSys/Calendar.aspx?id_hotel=1997",
-    "reservation_open": "D///M/2", // 매일 (2개월 이후 자리 오픈)
+    "reservation_open": "M/1/9/M/2", // 매월 1일 9시 (2개월 이후 자리 오픈)
   },
   "camp_munsoosan": {
     "name": "문수산 오토캠핑장",
@@ -46,7 +46,7 @@ const siteInfo = {
     "homepage_url": "https://cafe.naver.com/moonsusan",
     "reservation_url":
       "http://r.camperstory.com/resMain.hbb?reserve_path=RP&campseq=625",
-    "reservation_open": "W/SUN/10//", // 매주 일요일10시
+    "reservation_open": "W/SUN/10/W/2", // 매주 일요일10시 (2주 후 자리 오픈)
   },
   "camp_metro": {
     "name": "수도권매립지 캠핑장",
