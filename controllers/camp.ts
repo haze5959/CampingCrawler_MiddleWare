@@ -1,7 +1,7 @@
 import { redisRepo } from "../repository/redisRepository.ts";
+import { siteRepo } from "../repository/dbRepository.ts";
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { singleton } from "../utils/singleton.ts";
-import { siteInfo } from "../repository/siteInfo.ts";
 
 export const getCampAvailDatesList = async ({
   request,
@@ -86,8 +86,21 @@ export const getCampAvailDatesDatail = async ({
   }
 };
 
-export const getCampSiteInfo = ({
+export const getCampSiteSimpleInfo = ({
   response,
 }: RouterContext) => {
-  response.body = { result: true, msg: "", data: siteInfo };
+  response.body = { result: true, msg: "", data: singleton.siteSimpleInfo };
+};
+
+export const getCampSiteDetail = async ({
+  response,
+  params,
+}: RouterContext) => {
+  if (params && params.id) {
+    const campId: string = params.id;
+    const siteInfo = await siteRepo.getSiteInfo(campId);
+    response.body = { result: true, msg: "", data: siteInfo };
+  } else {
+    response.body = { result: false, msg: "param fail" };
+  }
 };

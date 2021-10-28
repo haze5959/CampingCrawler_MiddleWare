@@ -267,7 +267,36 @@ class UserRepository {
   }
 }
 
+class SiteRepository {
+  private static _instance = new SiteRepository();
+  private constructor() {
+  }
+
+  static get instance() {
+    return this._instance;
+  }
+
+  async getSiteInfo(id: string) {
+    const result = await client.query(
+      `SELECT * FROM camp.site WHERE id=${id};`,
+    );
+
+    const site: Record<string, string> = result[0];
+    return site;
+  }
+
+  async getAllSiteInfo() {
+    const result = await client.query(
+      `SELECT id, name, addr, area, reservation_open FROM camp.site;`,
+    );
+
+    const sites: Record<string, string>[] = result;
+    return sites;
+  }
+}
+
 const postsRepo = PostsRepository.instance;
 const userRepo = UserRepository.instance;
+const siteRepo = SiteRepository.instance;
 
-export { postsRepo, userRepo };
+export { postsRepo, siteRepo, userRepo };

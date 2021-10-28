@@ -1,7 +1,7 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { connect } from "https://deno.land/x/redis/mod.ts";
-import { CampAvailDates, numToCampArea } from "../models/campInfo.ts";
-import { campSiteKeys } from "../repository/siteInfo.ts";
+import { CampAvailDates, campSiteWithAreaBit } from "../models/campInfo.ts";
+import { campAreaAllBit } from "../models/campInfo.ts";
 
 const redis = await connect({
   hostname: Deno.env.get("REDIS_HOST") as string,
@@ -19,16 +19,15 @@ class RedisRepository {
   }
 
   async getAllCampAvailDates(): Promise<Array<CampAvailDates>> {
+    const campSiteArr = campSiteWithAreaBit(campAreaAllBit);
     var compInfoArr = Array<CampAvailDates>();
-    for (const area in campSiteKeys) {
-      try {
-        for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
-          const campAvailDates = await this.getCampAvailDates(site);
-          compInfoArr.push(campAvailDates);
-        }
-      } catch (error) {
-        console.error(error);
+    try {
+      for (const site in campSiteArr) {
+        const campAvailDates = await this.getCampAvailDates(site);
+        compInfoArr.push(campAvailDates);
       }
+    } catch (error) {
+      console.error(error);
     }
 
     return compInfoArr;
@@ -41,17 +40,15 @@ class RedisRepository {
       return this.getAllCampAvailDates();
     }
 
-    const campAreaArr = numToCampArea(areaBit);
+    const campSiteArr = campSiteWithAreaBit(areaBit);
     var compInfoArr = Array<CampAvailDates>();
-    for (const area of campAreaArr) {
-      try {
-        for (const site of campSiteKeys[area as keyof typeof campSiteKeys]) {
-          const campInfo = await this.getCampAvailDates(site);
-          compInfoArr.push(campInfo);
-        }
-      } catch (error) {
-        console.error(error);
+    try {
+      for (const site of campSiteArr) {
+        const campInfo = await this.getCampAvailDates(site);
+        compInfoArr.push(campInfo);
       }
+    } catch (error) {
+      console.error(error);
     }
 
     return compInfoArr;

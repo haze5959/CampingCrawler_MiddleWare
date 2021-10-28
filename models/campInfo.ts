@@ -1,3 +1,5 @@
+import { singleton } from "../utils/singleton.ts";
+
 export class CampAvailDates {
   name: string;
   availDates: string[] | undefined;
@@ -15,60 +17,49 @@ export class CampAvailDates {
 }
 
 export enum CampArea {
-  seoul = "seoul",
-  gyeonggi = "gyeonggi",
-  inchoen = "inchoen",
-  chungnam = "chungnam",
-  chungbuk = "chungbuk",
-  gangwon = "gangwon",
-  etc = "etc",
+  seoul = 1,
+  gyeonggi = 2,
+  inchoen = 4,
+  chungnam = 8,
+  chungbuk = 16,
+  gangwon = 32,
+  etc = 64,
 }
 
-// 강원 충북  충남  인천  경기  서울
-// 32  16   8    4    2    1
-function campAreatoBit(area: CampArea): number {
-  switch (area) {
-    case CampArea.seoul:
-      return 1;
-    case CampArea.gyeonggi:
-      return 2;
-    case CampArea.inchoen:
-      return 4;
-    case CampArea.chungnam:
-      return 8;
-    case CampArea.chungbuk:
-      return 16;
-    case CampArea.gangwon:
-      return 32;
-    default:
-      return 0;
-  }
-}
+export const campAreaAllBit = CampArea.seoul + CampArea.gyeonggi +
+  CampArea.inchoen +
+  CampArea.chungnam + CampArea.chungbuk + CampArea.gangwon + CampArea.etc;
 
-export function numToCampArea(bit: number): CampArea[] {
-  var areaArr: CampArea[] = [];
+export function campSiteWithAreaBit(bit: number): string[] {
+  var searchAreaArr: CampArea[] = [];
 
   while (bit > 0) {
-    if (bit >= campAreatoBit(CampArea.gangwon)) {
-      bit -= campAreatoBit(CampArea.gangwon);
-      areaArr.push(CampArea.gangwon);
-    } else if (bit >= campAreatoBit(CampArea.chungbuk)) {
-      bit -= campAreatoBit(CampArea.chungbuk);
-      areaArr.push(CampArea.chungbuk);
-    } else if (bit >= campAreatoBit(CampArea.chungnam)) {
-      bit -= campAreatoBit(CampArea.chungnam);
-      areaArr.push(CampArea.chungnam);
-    } else if (bit >= campAreatoBit(CampArea.inchoen)) {
-      bit -= campAreatoBit(CampArea.inchoen);
-      areaArr.push(CampArea.inchoen);
-    } else if (bit >= campAreatoBit(CampArea.gyeonggi)) {
-      bit -= campAreatoBit(CampArea.gyeonggi);
-      areaArr.push(CampArea.gyeonggi);
-    } else if (bit >= campAreatoBit(CampArea.seoul)) {
-      bit -= campAreatoBit(CampArea.seoul);
-      areaArr.push(CampArea.seoul);
+    if (bit >= CampArea.gangwon) {
+      bit -= CampArea.gangwon;
+      searchAreaArr.push(CampArea.gangwon);
+    } else if (bit >= CampArea.chungbuk) {
+      bit -= CampArea.chungbuk;
+      searchAreaArr.push(CampArea.chungbuk);
+    } else if (bit >= CampArea.chungnam) {
+      bit -= CampArea.chungnam;
+      searchAreaArr.push(CampArea.chungnam);
+    } else if (bit >= CampArea.inchoen) {
+      bit -= CampArea.inchoen;
+      searchAreaArr.push(CampArea.inchoen);
+    } else if (bit >= CampArea.gyeonggi) {
+      bit -= CampArea.gyeonggi;
+      searchAreaArr.push(CampArea.gyeonggi);
+    } else if (bit >= CampArea.seoul) {
+      bit -= CampArea.seoul;
+      searchAreaArr.push(CampArea.seoul);
     }
   }
 
-  return areaArr;
+  const siteIdArr: string[] = singleton.siteSimpleInfo
+    .filter((element) => {
+      return searchAreaArr.includes(element.area);
+    })
+    .map((value) => value.id);
+
+  return siteIdArr;
 }

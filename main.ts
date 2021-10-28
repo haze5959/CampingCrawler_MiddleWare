@@ -1,11 +1,12 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import { monthly } from "https://deno.land/x/deno_cron/cron.ts";
+import { monthly, weekly } from "https://deno.land/x/deno_cron/cron.ts";
 import { singleton } from "./utils/singleton.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import {
   getCampAvailDatesDatail,
   getCampAvailDatesList,
-  getCampSiteInfo,
+  getCampSiteDetail,
+  getCampSiteSimpleInfo,
 } from "./controllers/camp.ts";
 import {
   deleteFavorite,
@@ -34,7 +35,8 @@ router
   // 캠프 관련
   .get("/camp", getCampAvailDatesList)
   .get("/camp/:id", getCampAvailDatesDatail)
-  .get("/info", getCampSiteInfo)
+  .get("/info", getCampSiteSimpleInfo)
+  .get("/info/:id", getCampSiteDetail)
   // 포스트 관련
   .get("/home", getHomePosts)
   .get("/post/:id", getPosts)
@@ -63,6 +65,12 @@ app.use(router.allowedMethods());
 singleton.updateHolidayInFourMonth();
 monthly(() => {
   singleton.updateHolidayInFourMonth();
+}, 1);
+
+// 서버 시작할때랑 주마다 캠핑장 정보 업데이트
+singleton.updatesiteSimpleInfo();
+weekly(() => {
+  singleton.updatesiteSimpleInfo();
 }, 1);
 
 console.info("CAMP_MIDDLEWARE Start!!");
