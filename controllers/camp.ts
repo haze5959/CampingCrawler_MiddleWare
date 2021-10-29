@@ -67,6 +67,7 @@ export const getCampAvailDatesDatail = async ({
     const campKey: string = params.id;
     try {
       const info = await redisRepo.getCampAvailDatesDatail(campKey);
+      const siteInfo = await siteRepo.getSiteInfo(campKey);
       const json = {
         "site": info.name,
         "availDates": info.availDates,
@@ -76,7 +77,11 @@ export const getCampAvailDatesDatail = async ({
       response.body = {
         result: true,
         msg: "",
-        data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
+        data: {
+          "camp": json,
+          "holiday": singleton.holidaysInFourMonth,
+          "info": siteInfo
+        },
       };
     } catch (error) {
       response.body = { result: false, msg: error };
