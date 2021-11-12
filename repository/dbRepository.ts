@@ -1,15 +1,19 @@
 import "https://deno.land/x/dotenv/load.ts";
-import { Client } from "https://deno.land/x/mysql/mod.ts";
-import { Database, PostgresConnector } from 'https://deno.land/x/denodb/mod.ts';
+import { Database, MySQLConnector } from 'https://deno.land/x/denodb/mod.ts';
+import { Posts, Comment } from "../models/posts.ts";
+import { User } from "../models/user.ts";
+import { Site } from "../models/site.ts";
 
-const client = await new Client();
-
-client.connect({
-  hostname: Deno.env.get("DB_HOST"),
+// https://eveningkid.com/denodb-docs/docs/api/model-methods
+const connector = new MySQLConnector({
+  database: 'camp',
+  host: Deno.env.get("DB_HOST"),
   username: Deno.env.get("DB_ID"),
-  password: Deno.env.get("DB_PW"),
-  db: "",
+  password: Deno.env.get("DB_PW")
 });
+
+const db = new Database(connector);
+db.link([Posts, Comment, User, Site]);
 
 class PostsRepository {
   private static _instance = new PostsRepository();
@@ -21,12 +25,14 @@ class PostsRepository {
   }
 
   async getPosts(id: number) {
-    const posts = await client.query(`SELECT * FROM camp.post WHERE id=${id};`);
+    // const posts = await client.query(`SELECT * FROM camp.post WHERE id=${id};`);
+    const posts = await Posts.select().find(id);
     if (posts.length > 0) {
-      const comments = await client.query(
-        `SELECT * FROM camp.comment WHERE post_id=${id} ORDER BY id DESC;`,
-      );
+      // const comments = await client.query(
+      //   `SELECT * FROM camp.comment WHERE post_id=${id} ORDER BY id DESC;`,
+      // );
 
+      const comments = Comment.where('post_id', id).orderBy(id: 'desc');
       return {
         posts: posts[0],
         comments: comments,

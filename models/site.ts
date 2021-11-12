@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'https://deno.land/x/denodb/mod.ts';
 
-export class User extends Model {
-    static table = 'user';
+export class Site extends Model {
+    static table = 'site';
 
     static fields = {
         id: {
