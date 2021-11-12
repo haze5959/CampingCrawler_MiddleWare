@@ -1,5 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { Client } from "https://deno.land/x/mysql/mod.ts";
+import { Database, PostgresConnector } from 'https://deno.land/x/denodb/mod.ts';
 
 const client = await new Client();
 

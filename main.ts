@@ -2,64 +2,20 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { monthly, weekly } from "https://deno.land/x/deno_cron/cron.ts";
 import { singleton } from "./utils/singleton.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
-import {
-  getCampAvailDatesDatail,
-  getCampAvailDatesList,
-  getCampSiteDetail,
-  getCampSiteSimpleInfo,
-} from "./controllers/camp.ts";
-import {
-  deleteFavorite,
-  deleteUser,
-  getFavorite,
-  getPushInfo,
-  getUser,
-  postFavorite,
-  putUserArea,
-  putUserNick,
-  reportMail,
-} from "./controllers/user.ts";
-import {
-  deleteComment,
-  deletePosts,
-  getHomePosts,
-  getPosts,
-  getPostsPage,
-  postComment,
-  postPosts,
-} from "./controllers/posts.ts";
 
-const router = new Router();
-
-router
-  // 캠프 관련
-  .get("/camp", getCampAvailDatesList)
-  .get("/camp/:id", getCampAvailDatesDatail)
-  .get("/info", getCampSiteSimpleInfo)
-  .get("/info/:id", getCampSiteDetail)
-  // 포스트 관련
-  .get("/home", getHomePosts)
-  .get("/post/:id", getPosts)
-  .get("/post/list/:page", getPostsPage)
-  .post("/post", postPosts)
-  .post("/comment", postComment)
-  .delete("/post/:token", deletePosts)
-  .delete("/comment/:token", deleteComment)
-  // 유저 관련
-  .get("/user/:token", getUser)
-  .put("/user/area", putUserArea)
-  .put("/user/nick", putUserNick)
-  .get("/user/push/:token", getPushInfo)
-  .get("/user/favorite/:token", getFavorite)
-  .post("/user/favorite", postFavorite)
-  .delete("/user/favorite/:token", deleteFavorite)
-  .delete("/user/:token", deleteUser)
-  .post("/report", reportMail);
+import { campRouter } from "./routers/camp_router.ts";
+import { postsRouter } from "./routers/posts_router.ts";
+import { userRouter } from "./routers/user_router.ts";
 
 const app = new Application();
 app.use(oakCors({ origin: "*" }));
-app.use(router.routes());
-app.use(router.allowedMethods());
+app.use(campRouter.routes(), campRouter.allowedMethods());
+app.use(postsRouter.routes(), postsRouter.allowedMethods());
+app.use(userRouter.routes(), userRouter.allowedMethods());
+
+app.addEventListener("error", (evt) => {
+  console.error(evt.error);
+});
 
 // 서버 시작할때랑 월마다 공휴일 업데이트
 singleton.updateHolidayInFourMonth();
