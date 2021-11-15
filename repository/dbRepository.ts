@@ -1,5 +1,5 @@
 import "https://deno.land/x/dotenv/load.ts";
-import { Database, MySQLConnector } from 'https://deno.land/x/denodb/mod.ts';
+import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
 import { Posts, Comment } from "../models/posts.ts";
 import { User } from "../models/user.ts";
 import { Site } from "../models/site.ts";
@@ -7,9 +7,9 @@ import { Site } from "../models/site.ts";
 // https://eveningkid.com/denodb-docs/docs/api/model-methods
 const connector = new MySQLConnector({
   database: 'camp',
-  host: Deno.env.get("DB_HOST"),
-  username: Deno.env.get("DB_ID"),
-  password: Deno.env.get("DB_PW")
+  host: Deno.env.get("DB_HOST")!,
+  username: Deno.env.get("DB_ID")!,
+  password: Deno.env.get("DB_PW")!
 });
 
 const db = new Database(connector);
@@ -32,7 +32,7 @@ class PostsRepository {
       //   `SELECT * FROM camp.comment WHERE post_id=${id} ORDER BY id DESC;`,
       // );
 
-      const comments = Comment.where('post_id', id).orderBy(id: 'desc');
+      const comments = Comment.where('post_id', id).orderBy('desc');
       return {
         posts: posts[0],
         comments: comments,
