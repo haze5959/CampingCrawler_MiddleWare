@@ -2,6 +2,7 @@ import { DataTypes, Model } from "https://deno.land/x/denodb/mod.ts";
 
 export class Posts extends Model {
   static table = "post";
+  static timestamps = true;
 
   static fields = {
     id: {
@@ -18,7 +19,6 @@ export class Posts extends Model {
     title: DataTypes.string(45),
     body: DataTypes.TEXT,
     nick: DataTypes.string(20),
-    edit_time: DataTypes.DATETIME,
     comment_count: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -29,6 +29,7 @@ export class Posts extends Model {
 
 export class Comment extends Model {
   static table = "comment";
+  static timestamps = true;
 
   static fields = {
     id: {
@@ -44,6 +45,5 @@ export class Comment extends Model {
     },
     nick: DataTypes.string(20),
     comment: DataTypes.TEXT,
-    edit_time: DataTypes.DATETIME,
   };
 }

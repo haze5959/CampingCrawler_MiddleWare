@@ -2,6 +2,8 @@ import { postsRepo, userRepo } from "../repository/dbRepository.ts";
 import { RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 
+import { User } from "../models/user.ts";
+
 const emptyNick = "익명의 캠퍼";
 
 export const getHomePosts = async ({
@@ -92,8 +94,8 @@ export const postPosts = async ({
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          nick = userResult?.user["nick"];
-          level = userResult?.user["level"];
+          nick = userResult.user.nick as string
+          level = userResult.user.level as number;
         }
       }
 
@@ -144,12 +146,12 @@ export const postComment = async ({
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          nick = userResult?.user["nick"];
+          nick = userResult.user.nick as string;
         }
       }
 
       const result = await postsRepo.createComment(postId, nick, comment);
-      if (result.affectedRows != null) {
+      if (result != undefined) {
         response.body = { result: true, msg: "" };
       } else {
         response.body = { result: false, msg: "not excuted" };
@@ -193,7 +195,7 @@ export const deletePosts = async ({
       }
 
       const result = await postsRepo.deletePosts(id);
-      if (result.affectedRows != null) {
+      if (result != undefined) {
         response.body = { result: true, msg: "" };
       } else {
         response.body = { result: false, msg: "not excuted" };
@@ -238,7 +240,7 @@ export const deleteComment = async ({
       }
 
       const result = await postsRepo.deleteComment(id, postId);
-      if (result.affectedRows != null) {
+      if (result != undefined) {
         response.body = { result: true, msg: "" };
       } else {
         response.body = { result: false, msg: "not excuted" };

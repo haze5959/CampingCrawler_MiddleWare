@@ -66,7 +66,7 @@ class Singleton {
 
   async updateHolidayInFourMonth() {
     this.holidaysInFourMonth = {};
-    
+
     try {
       for (let i = 0; i < 4; i++) {
         const searchDate = new Date()
@@ -101,7 +101,8 @@ class Singleton {
   async updatesiteSimpleInfo() {
     const data = await siteRepo.getAllSiteInfo();
     this.siteSimpleInfo = data.map(val => {
-      return new SiteInfo(val);
+      const siteInfoVal = val as Record<string, number | string>
+      return new SiteInfo(siteInfoVal);
     });
   }
 }

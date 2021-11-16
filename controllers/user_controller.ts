@@ -48,7 +48,7 @@ function makeid(length: number): string {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(
       Math.random() *
-        charactersLength,
+      charactersLength,
     ));
   }
   return result;
@@ -73,9 +73,9 @@ export const putUserNick = async ({
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
         const userResult = await userRepo.getUser(authInfo.uid);
-        const oldNick = userResult?.user["nick"];
+        const oldNick = userResult.user.nick as string;
         const result = await userRepo.updateUserNick(authInfo.uid, nick, oldNick);
-        if (result.affectedRows != null) {
+        if (result != undefined) {
           response.body = { result: true, msg: "" };
         } else {
           response.body = { result: false, msg: "not excuted" };
@@ -105,7 +105,7 @@ export const putUserArea = async ({
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
         const result = await userRepo.updateUserArea(authInfo.uid, areaBit);
-        if (result.affectedRows != null) {
+        if (result != undefined) {
           response.body = { result: true, msg: "" };
         } else {
           response.body = { result: false, msg: "not excuted" };
@@ -254,7 +254,7 @@ export const deleteFavorite = async ({
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
         const result = await userRepo.deleteUserFavorite(authInfo.uid, campId);
-        if (result.affectedRows != null) {
+        if (result != undefined) {
           response.body = { result: true, msg: "" };
         } else {
           response.body = { result: false, msg: "not excuted" };
