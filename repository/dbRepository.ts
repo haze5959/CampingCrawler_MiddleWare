@@ -6,7 +6,6 @@ import { Site } from "../models/site.ts";
 import { Favorite } from "../models/favorite.ts";
 import { Push } from "../models/push.ts";
 
-// https://eveningkid.com/denodb-docs/docs/api/model-methods
 const connector = new MySQLConnector({
   database: 'camp',
   host: Deno.env.get("DB_HOST")!,
@@ -32,13 +31,13 @@ class PostsRepository {
   async getHomePosts() {
     const amountOfPage = 5;
     const notice = await Posts.where('type', 0)
-      .select('id', 'type', 'title', 'nick', 'edit_time', 'comment_count')
+      .select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
       .orderBy('desc')
       .take(amountOfPage)
       .get();
 
     const posts = await Posts.where('type', '>', 0)
-      .select('id', 'type', 'title', 'nick', 'edit_time', 'comment_count')
+      .select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
       .orderBy('desc')
       .take(amountOfPage)
       .get();
@@ -53,13 +52,13 @@ class PostsRepository {
     const amountOfPage = 10;
 
     if (typeArr.length == 0) {
-      return await Posts.select('id', 'type', 'title', 'nick', 'edit_time', 'comment_count')
+      return await Posts.select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
         .orderBy('desc')
         .offset(amountOfPage * page)
         .take(amountOfPage)
         .get();
     } else {
-      const query = Posts.select('id', 'type', 'title', 'nick', 'edit_time', 'comment_count')
+      const query = Posts.select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
       for (const type in typeArr) {
         query.where('type', Number(type))
       }

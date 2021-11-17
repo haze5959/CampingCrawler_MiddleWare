@@ -1,6 +1,6 @@
 import { redisRepo } from "../repository/redisRepository.ts";
 import { siteRepo } from "../repository/dbRepository.ts";
-import { RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { RouterContext } from "https://deno.land/x/oak@v9.0.1/mod.ts";
 import { singleton } from "../utils/singleton.ts";
 
 export const getCampAvailDatesList = async ({

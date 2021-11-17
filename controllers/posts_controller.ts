@@ -1,5 +1,5 @@
 import { postsRepo, userRepo } from "../repository/dbRepository.ts";
-import { RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { RouterContext } from "https://deno.land/x/oak@v9.0.1/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 
 import { User } from "../models/user.ts";

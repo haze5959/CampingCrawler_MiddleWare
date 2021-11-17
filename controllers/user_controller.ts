@@ -1,4 +1,4 @@
-import { RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { RouterContext } from "https://deno.land/x/oak@v9.0.1/mod.ts";
 import { mailerObj } from "../utils/smtpClient.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 import { userRepo } from "../repository/dbRepository.ts";

@@ -64,39 +64,39 @@ class Singleton {
 
   siteSimpleInfo: SiteInfo[] = [];
 
-  async updateHolidayInFourMonth() {
-    this.holidaysInFourMonth = {};
+  // async updateHolidayInFourMonth() {
+  //   this.holidaysInFourMonth = {};
 
-    try {
-      for (let i = 0; i < 4; i++) {
-        const searchDate = new Date()
-        searchDate.setMonth(searchDate.getMonth() + i);
-        const month = String(searchDate.getMonth() + 1).padStart(2, "0");
-        const year = searchDate.getFullYear();
-        // console.log("year - " + year + "month - " + month)
-        const res = await fetch(
-          `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?serviceKey=Hn1zrxA4VzEINy0sxFra88Pznz3ZZeKyvzHA3G5ikHFfeLG2VYUmpoYcZGZ0Pn3CcwsQXhaRUJM7qbYwbMakkA%3D%3D&solYear=${year}&solMonth=${month}`,
-        );
-        const text = await res.text();
-        const result = parse(text) as HolidayResponse;
-        const items = result.response.body.items;
-        if (items != null) {
-          const item = items.item;
-          if (item instanceof Array) {
-            for (const arg of item) {
-              this.holidaysInFourMonth[arg.locdate] = arg.dateName;
-            }
-          } else {
-            this.holidaysInFourMonth[item.locdate] = item.dateName;
-          }
-        }
-      }
+  //   try {
+  //     for (let i = 0; i < 4; i++) {
+  //       const searchDate = new Date()
+  //       searchDate.setMonth(searchDate.getMonth() + i);
+  //       const month = String(searchDate.getMonth() + 1).padStart(2, "0");
+  //       const year = searchDate.getFullYear();
+  //       // console.log("year - " + year + "month - " + month)
+  //       const res = await fetch(
+  //         `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?serviceKey=Hn1zrxA4VzEINy0sxFra88Pznz3ZZeKyvzHA3G5ikHFfeLG2VYUmpoYcZGZ0Pn3CcwsQXhaRUJM7qbYwbMakkA%3D%3D&solYear=${year}&solMonth=${month}`,
+  //       );
+  //       const text = await res.text();
+  //       const result = parse(text) as HolidayResponse;
+  //       const items = result.response.body.items;
+  //       if (items != null) {
+  //         const item = items.item;
+  //         if (item instanceof Array) {
+  //           for (const arg of item) {
+  //             this.holidaysInFourMonth[arg.locdate] = arg.dateName;
+  //           }
+  //         } else {
+  //           this.holidaysInFourMonth[item.locdate] = item.dateName;
+  //         }
+  //       }
+  //     }
 
-      console.log(this.holidaysInFourMonth);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  //     console.log(this.holidaysInFourMonth);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
   async updatesiteSimpleInfo() {
     const data = await siteRepo.getAllSiteInfo();

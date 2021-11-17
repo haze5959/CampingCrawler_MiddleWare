@@ -4,11 +4,22 @@ export class Push extends Model {
     static table = "push";
 
     static fields = {
-        user_id: {
+        device_id: {
             type: DataTypes.STRING,
             length: 30,
             primaryKey: true,
-            allowNull: false,
+        },
+        purchase_id: {
+            type: DataTypes.STRING,
+            length: 20,
+        },
+        user_id: {
+            type: DataTypes.STRING,
+            length: 30,
+        },
+        fcm_token: {
+            type: DataTypes.STRING,
+            length: 255,
         },
     };
 }
