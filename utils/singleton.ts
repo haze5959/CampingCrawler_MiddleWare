@@ -1,55 +1,5 @@
-import { parse } from "https://deno.land/x/xml/mod.ts";
-import { CampArea } from "../models/campInfo.ts";
+import { SiteSimpleInfo } from "../models/site.ts";
 import { siteRepo } from "../repository/dbRepository.ts";
-
-interface Header {
-  resultCode: number;
-  resultMsg: string;
-}
-
-interface Item {
-  dateKind: number;
-  dateName: string;
-  isHoliday: string;
-  locdate: string;
-  seq: number;
-}
-
-interface Items {
-  item: [Item] | Item;
-}
-
-interface Body {
-  items: Items | null;
-  numOfRows: number;
-  pageNo: number;
-  totalCount: number;
-}
-
-interface RootObject {
-  header: Header;
-  body: Body;
-}
-
-interface HolidayResponse {
-  response: RootObject;
-}
-
-class SiteInfo {
-  id: string;
-  name: string;
-  addr: string;
-  area: CampArea;
-  reservationOpen: string
-
-  constructor(json: Record<string, number | string>) {
-    this.id = json["id"] as string;
-    this.name = json["name"] as string;
-    this.addr = json["addr"] as string;
-    this.area = json["area"] as number;
-    this.reservationOpen = json["reservation_open"] as string;
-  }
-}
 
 class Singleton {
   private static _instance = new Singleton();
@@ -62,47 +12,59 @@ class Singleton {
 
   holidaysInFourMonth: { [key: string]: string } = {};
 
-  siteSimpleInfo: SiteInfo[] = [];
+  siteSimpleInfo: SiteSimpleInfo[] = [];
 
-  // async updateHolidayInFourMonth() {
-  //   this.holidaysInFourMonth = {};
+  async updateHolidayInFourMonth() {
+    this.holidaysInFourMonth = {};
 
-  //   try {
-  //     for (let i = 0; i < 4; i++) {
-  //       const searchDate = new Date()
-  //       searchDate.setMonth(searchDate.getMonth() + i);
-  //       const month = String(searchDate.getMonth() + 1).padStart(2, "0");
-  //       const year = searchDate.getFullYear();
-  //       // console.log("year - " + year + "month - " + month)
-  //       const res = await fetch(
-  //         `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?serviceKey=Hn1zrxA4VzEINy0sxFra88Pznz3ZZeKyvzHA3G5ikHFfeLG2VYUmpoYcZGZ0Pn3CcwsQXhaRUJM7qbYwbMakkA%3D%3D&solYear=${year}&solMonth=${month}`,
-  //       );
-  //       const text = await res.text();
-  //       const result = parse(text) as HolidayResponse;
-  //       const items = result.response.body.items;
-  //       if (items != null) {
-  //         const item = items.item;
-  //         if (item instanceof Array) {
-  //           for (const arg of item) {
-  //             this.holidaysInFourMonth[arg.locdate] = arg.dateName;
-  //           }
-  //         } else {
-  //           this.holidaysInFourMonth[item.locdate] = item.dateName;
-  //         }
-  //       }
-  //     }
+    try {
+      for (let i = 0; i < 4; i++) {
+        const searchDate = new Date();
+        searchDate.setMonth(searchDate.getMonth() + i);
+        const month = String(searchDate.getMonth() + 1).padStart(2, "0");
+        const year = searchDate.getFullYear();
+        // console.log("year - " + year + "month - " + month)
+        const res = await fetch(
+          `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?serviceKey=Hn1zrxA4VzEINy0sxFra88Pznz3ZZeKyvzHA3G5ikHFfeLG2VYUmpoYcZGZ0Pn3CcwsQXhaRUJM7qbYwbMakkA%3D%3D&solYear=${year}&solMonth=${month}`,
+        );
+        const text = await res.text();
 
-  //     console.log(this.holidaysInFourMonth);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+        const itemsRegex = /<item>(.*?)<\/item>/g;
+        const dateNameRegex = /<dateName>(.*)<\/dateName>/;
+        const locdateRegex = /<locdate>(.*)<\/locdate>/;
+        const items = itemsRegex.exec(text);
+        if (items != null) {
+          for (const arg of items) {
+            const dateNameResult = dateNameRegex.exec(arg);
+            if (dateNameResult != null) {
+              let dateName = dateNameResult[0];
+              dateName = dateName.replace("<dateName>", "");
+              dateName = dateName.replace("</dateName>", "");
+
+              const locdateResults = locdateRegex.exec(arg);
+              if (locdateResults != null) {
+                let locdate = locdateResults[0];
+                locdate = locdate.replace("<locdate>", "");
+                locdate = locdate.replace("</locdate>", "");
+
+                this.holidaysInFourMonth[locdate] = dateName;
+              }
+            }
+          }
+        }
+      }
+
+      console.log(this.holidaysInFourMonth);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async updatesiteSimpleInfo() {
     const data = await siteRepo.getAllSiteInfo();
-    this.siteSimpleInfo = data.map(val => {
-      const siteInfoVal = val as Record<string, number | string>
-      return new SiteInfo(siteInfoVal);
+    this.siteSimpleInfo = data.map((val) => {
+      const siteInfoVal = val as Record<string, number | string>;
+      return new SiteSimpleInfo(siteInfoVal);
     });
   }
 }
@@ -113,7 +75,7 @@ export { singleton };
 
 // reservation_open 규칙
 // '1/2/3/4/5'
-// 1 - (예약 오픈일) Y: 매년, M: 매월, W: 매주, D: 매일 
+// 1 - (예약 오픈일) Y: 매년, M: 매월, W: 매주, D: 매일
 // 2 - '1'에서 M의 경우에는 Day, '1'에서 W의 경우에는 요일, 그 외에는 안씀
 // 3 - 시간
 // 4 - (예약 오픈이 몇일 전에 열리는지) M: 매월, W: 매주
