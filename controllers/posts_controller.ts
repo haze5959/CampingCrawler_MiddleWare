@@ -6,9 +6,7 @@ import { User } from "../models/user.ts";
 
 const emptyNick = "익명의 캠퍼";
 
-export const getHomePosts = async ({
-  response,
-}: RouterContext) => {
+export const getHomePosts = async (ctx: RouterContext) => {
   try {
     const data = await postsRepo.getHomePosts();
     response.body = { result: true, msg: "", data: data };
@@ -18,11 +16,7 @@ export const getHomePosts = async ({
   }
 };
 
-export const getPosts = async ({
-  request,
-  response,
-  params,
-}: RouterContext) => {
+export const getPosts = async (ctx: RouterContext) => {
   if (params && params.id) {
     const id = Number(params.id);
     const token = request.url.searchParams.get("token") as string;
@@ -53,11 +47,7 @@ export const getPosts = async ({
   }
 };
 
-export const getPostsPage = async ({
-  request,
-  response,
-  params,
-}: RouterContext) => {
+export const getPostsPage = async (ctx: RouterContext) => {
   if (params && params.page) {
     const page = Number(params.page);
     const typeArr: string[] = request.url.searchParams.getAll("type");
@@ -73,10 +63,7 @@ export const getPostsPage = async ({
   }
 };
 
-export const postPosts = async ({
-  request,
-  response,
-}: RouterContext) => {
+export const postPosts = async (ctx: RouterContext) => {
   if (request.hasBody) {
     try {
       const body = await request.body({ type: "json" }).value;
@@ -127,10 +114,7 @@ export const postPosts = async ({
   }
 };
 
-export const postComment = async ({
-  request,
-  response,
-}: RouterContext) => {
+export const postComment = async (ctx: RouterContext) => {
   if (request.hasBody) {
     try {
       const body = await request.body({ type: "json" }).value;
@@ -165,11 +149,7 @@ export const postComment = async ({
   }
 };
 
-export const deletePosts = async ({
-  request,
-  response,
-  params,
-}: RouterContext) => {
+export const deletePosts = async (ctx: RouterContext) => {
   if (params && params.token) {
     try {
       const token: string = params.token;
@@ -209,11 +189,7 @@ export const deletePosts = async ({
   }
 };
 
-export const deleteComment = async ({
-  request,
-  response,
-  params,
-}: RouterContext) => {
+export const deleteComment = async (ctx: RouterContext) => {
   if (params && params.token) {
     try {
       const token: string = params.token;

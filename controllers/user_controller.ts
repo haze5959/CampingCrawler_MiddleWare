@@ -1,13 +1,10 @@
 import { RouterContext } from "https://deno.land/x/oak@v9.0.1/mod.ts";
-import { mailerObj } from "../utils/smtpClient.ts";
+// import { mailerObj } from "../utils/smtpClient.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 import { userRepo } from "../repository/dbRepository.ts";
 
 // 유저 정보 가져오기
-export const getUser = async ({
-  response,
-  params,
-}: RouterContext) => {
+export const getUser = async (ctx: RouterContext) => {
   if (params && params.token) {
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
@@ -42,9 +39,9 @@ export const getUser = async ({
 
 function makeid(length: number): string {
   var result = "";
-  var characters =
+  const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
+  const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(
       Math.random() *
@@ -54,10 +51,7 @@ function makeid(length: number): string {
   return result;
 }
 
-export const putUserNick = async ({
-  request,
-  response,
-}: RouterContext) => {
+export const putUserNick = async (ctx: RouterContext) => {
   if (request.hasBody) {
     try {
       const body = await request.body({ type: "json" }).value;
@@ -92,10 +86,7 @@ export const putUserNick = async ({
   }
 };
 
-export const putUserArea = async ({
-  request,
-  response,
-}: RouterContext) => {
+export const putUserArea = async (ctx: RouterContext) => {
   if (request.hasBody) {
     try {
       const body = await request.body({ type: "json" }).value;
@@ -123,10 +114,7 @@ export const putUserArea = async ({
 };
 
 // 유저 삭제하기
-export const deleteUser = async ({
-  response,
-  params,
-}: RouterContext) => {
+export const deleteUser = async (ctx: RouterContext) => {
   if (params && params.token) {
     const token: string = params.token;
 
@@ -152,17 +140,53 @@ export const deleteUser = async ({
 };
 
 // 신고하기
-export const reportMail = async ({
-  request,
-  response,
-}: RouterContext) => {
+export const createReport = async (ctx: RouterContext) => {
   if (request.hasBody) {
     try {
       const body = await request.body({ type: "json" }).value;
-      const id = body["id"] as string;
+      const idStr = body["id"] as string;
+      const titleStr = body["title"] as string;
       const bodyStr = body["body"] as string;
 
-      await mailerObj("[명당캠핑] 🤬 신고 - " + id, bodyStr);
+      await userRepo.createReport(idStr, titleStr, bodyStr);
+      // await mailerObj("[명당캠핑] 🤬 신고 - " + id, bodyStr);
+      response.body = { result: true, msg: "" };
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "no params." };
+  }
+};
+
+// 신고 상태 수정
+export const changeReportState = async (ctx: RouterContext) => {
+  if (request.hasBody) {
+    try {
+      const body = await request.body({ type: "json" }).value;
+      const id = body["id"] as number;
+      const state = body["state"] as number;
+
+      await userRepo.updateReport(id, state);
+      response.body = { result: true, msg: "" };
+    } catch (error) {
+      console.error(error);
+      response.body = { result: false, msg: error };
+    }
+  } else {
+    response.body = { result: false, msg: "no params." };
+  }
+};
+
+// 신고 삭제
+export const deleteReport = async (ctx: RouterContext) => {
+  if (request.hasBody) {
+    try {
+      const body = await request.body({ type: "json" }).value;
+      const id = body["id"] as number;
+
+      await userRepo.deleteReport(id);
       response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
@@ -174,10 +198,7 @@ export const reportMail = async ({
 };
 
 // 푸시 정보 가져오기
-export const getPushInfo = async ({
-  response,
-  params,
-}: RouterContext) => {
+export const getPushInfo = async (ctx: RouterContext) => {
   if (params && params.token) {
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
@@ -193,10 +214,7 @@ export const getPushInfo = async ({
 };
 
 // 즐겨찾는 캠핑목록 가져오기
-export const getFavorite = async ({
-  response,
-  params,
-}: RouterContext) => {
+export const getFavorite = async (ctx: RouterContext) => {
   if (params && params.token) {
     const token: string = params.token;
     const authInfo = await getAuthInfo(token);
@@ -211,10 +229,7 @@ export const getFavorite = async ({
   }
 };
 
-export const postFavorite = async ({
-  request,
-  response,
-}: RouterContext) => {
+export const postFavorite = async (ctx: RouterContext) => {
   if (request.hasBody) {
     try {
       const body = await request.body({ type: "json" }).value;
@@ -241,11 +256,7 @@ export const postFavorite = async ({
   }
 };
 
-export const deleteFavorite = async ({
-  request,
-  response,
-  params,
-}: RouterContext) => {
+export const deleteFavorite = async (ctx: RouterContext) => {
   if (params && params.token) {
     try {
       const token: string = params.token;

@@ -20,7 +20,7 @@ class RedisRepository {
 
   async getAllCampAvailDates(): Promise<Array<CampAvailDates>> {
     const campSiteArr = campSiteWithAreaBit(campAreaAllBit);
-    var compInfoArr = Array<CampAvailDates>();
+    const compInfoArr = Array<CampAvailDates>();
     try {
       for (const site in campSiteArr) {
         const campAvailDates = await this.getCampAvailDates(site);
@@ -41,7 +41,7 @@ class RedisRepository {
     }
 
     const campSiteArr = campSiteWithAreaBit(areaBit);
-    var compInfoArr = Array<CampAvailDates>();
+    const compInfoArr = Array<CampAvailDates>();
     try {
       for (const site of campSiteArr) {
         const campInfo = await this.getCampAvailDates(site);

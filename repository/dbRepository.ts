@@ -1,26 +1,27 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
-import { Posts, Comment } from "../models/posts.ts";
+import { Comment, Posts } from "../models/posts.ts";
 import { User } from "../models/user.ts";
 import { Site } from "../models/site.ts";
 import { Favorite } from "../models/favorite.ts";
 import { Push } from "../models/push.ts";
+import { Report } from "../models/report.ts";
 
 const connector = new MySQLConnector({
-  database: 'camp',
+  database: "camp",
   host: Deno.env.get("DB_HOST")!,
   username: Deno.env.get("DB_ID")!,
-  password: Deno.env.get("DB_PW")!
+  password: Deno.env.get("DB_PW")!,
 });
 
 const db = new Database(connector);
-db.link([Posts, Comment, User, Site, Favorite, Push]);
+db.link([Posts, Comment, User, Site, Favorite, Push, Report]);
 
 class PostsRepository {
   async getPosts(id: number) {
     const posts = await Posts.find(id);
-    const comments = await Comment.where('post_id', id)
-      .orderBy('desc')
+    const comments = await Comment.where("post_id", id)
+      .orderBy("desc")
       .all();
     return {
       posts: posts,
@@ -30,15 +31,15 @@ class PostsRepository {
 
   async getHomePosts() {
     const amountOfPage = 5;
-    const notice = await Posts.where('type', 0)
-      .select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
-      .orderBy('desc')
+    const notice = await Posts.where("type", 0)
+      .select("id", "type", "title", "nick", "updated_at", "comment_count")
+      .orderBy("desc")
       .take(amountOfPage)
       .get();
 
-    const posts = await Posts.where('type', '>', 0)
-      .select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
-      .orderBy('desc')
+    const posts = await Posts.where("type", ">", 0)
+      .select("id", "type", "title", "nick", "updated_at", "comment_count")
+      .orderBy("desc")
       .take(amountOfPage)
       .get();
 
@@ -52,19 +53,33 @@ class PostsRepository {
     const amountOfPage = 10;
 
     if (typeArr.length == 0) {
-      return await Posts.select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
-        .orderBy('desc')
+      return await Posts.select(
+        "id",
+        "type",
+        "title",
+        "nick",
+        "updated_at",
+        "comment_count",
+      )
+        .orderBy("desc")
         .offset(amountOfPage * page)
         .take(amountOfPage)
         .get();
     } else {
-      const query = Posts.select('id', 'type', 'title', 'nick', 'updated_at', 'comment_count')
+      const query = Posts.select(
+        "id",
+        "type",
+        "title",
+        "nick",
+        "updated_at",
+        "comment_count",
+      );
       for (const type in typeArr) {
-        query.where('type', Number(type))
+        query.where("type", Number(type));
       }
 
       return await query
-        .orderBy('desc')
+        .orderBy("desc")
         .offset(amountOfPage * page)
         .take(amountOfPage)
         .get();
@@ -102,14 +117,14 @@ class PostsRepository {
       const posts = await Posts.find(postId);
       const commentCount = posts.comment_count as number;
       posts.comment_count = commentCount + 1;
-      await posts.update()
+      await posts.update();
     });
   }
 
   async deletePosts(id: number) {
     return await db.transaction(async () => {
       await Posts.deleteById(id);
-      await Comment.where('post_id', id).delete();
+      await Comment.where("post_id", id).delete();
     });
   }
 
@@ -119,35 +134,48 @@ class PostsRepository {
       const commentCount = posts.comment_count as number;
       posts.comment_count = commentCount - 1;
       await posts.update();
-      await await Comment.where('id', id).delete();
+      await await Comment.where("id", id).delete();
     });
   }
 }
 
 class UserRepository {
   async getUser(uid: string) {
-    const user = await User.select('nick', 'auth_level', 'area_bit', 'use_push_area_on_holiday',
-      'use_push_site_on_holiday', 'use_push_reservation_day', 'use_push_notice')
-      .find(uid)
+    const user = await User.select(
+      "nick",
+      "auth_level",
+      "area_bit",
+      "use_push_area_on_holiday",
+      "use_push_site_on_holiday",
+      "use_push_reservation_day",
+      "use_push_notice",
+    )
+      .find(uid);
 
-    const favorites = await Favorite.select('camp_id').where('user_id', uid).all();
+    const favorites = await Favorite.select("camp_id").where("user_id", uid)
+      .all();
     return {
       "user": user,
       "favorite": favorites,
-    }
+    };
   }
 
   async getUserPushInfo(uid: string) {
-    return await User.where(User.field('user_id'), uid)
-      .join(Push, Push.field('id'), User.field('user_id'))
-      .select('area_bit', 'use_push_area_on_holiday',
-        'use_push_site_on_holiday', 'use_push_reservation_day', 'use_push_notice')
+    return await User.where(User.field("user_id"), uid)
+      .join(Push, Push.field("id"), User.field("user_id"))
+      .select(
+        "area_bit",
+        "use_push_area_on_holiday",
+        "use_push_site_on_holiday",
+        "use_push_reservation_day",
+        "use_push_notice",
+      )
       .get();
   }
 
   async getFavorite(uid: string) {
-    return await Favorite.select('camp_id')
-      .where('user_id', uid)
+    return await Favorite.select("camp_id")
+      .where("user_id", uid);
   }
 
   async createUser(
@@ -164,13 +192,13 @@ class UserRepository {
   async deleteUser(
     uid: string,
   ) {
-    return await User.where('user_id', uid).delete();;
+    return await User.where("user_id", uid).delete();
   }
 
   async checkUserNick(
     nick: string,
   ) {
-    const results = await User.where('nick', nick).count();
+    const results = await User.where("nick", nick).count();
     return results > 0;
   }
 
@@ -180,9 +208,9 @@ class UserRepository {
     oldNick: string,
   ) {
     return await db.transaction(async () => {
-      await Posts.where('nick', oldNick).update('nick', nick);
-      await Comment.where('nick', oldNick).update('nick', nick);
-      await User.where('user_id', uid).update('nick', nick);
+      await Posts.where("nick", oldNick).update("nick", nick);
+      await Comment.where("nick", oldNick).update("nick", nick);
+      await User.where("user_id", uid).update("nick", nick);
     });
   }
 
@@ -190,7 +218,7 @@ class UserRepository {
     uid: string,
     areaBit: number,
   ) {
-    return await User.where('user_id', uid).update('area_bit', areaBit);
+    return await User.where("user_id", uid).update("area_bit", areaBit);
   }
 
   async createUserFavorite(
@@ -207,8 +235,34 @@ class UserRepository {
     uid: string,
     campId: string,
   ) {
-    return await Favorite.where('user_id', uid)
-      .where('camp_id', campId)
+    return await Favorite.where("user_id", uid)
+      .where("camp_id", campId)
+      .delete();
+  }
+
+  async createReport(
+    uid: string,
+    title: string,
+    body: string,
+  ) {
+    const report = new Report();
+    report.user_id = uid;
+    report.title = title;
+    report.body = body;
+    return await report.save();
+  }
+
+  async updateReport(
+    id: number,
+    state: number,
+  ) {
+    return await User.where("id", id).update("state", state);
+  }
+
+  async deleteReport(
+    id: number,
+  ) {
+    return await Favorite.where("id", id)
       .delete();
   }
 }
@@ -219,7 +273,8 @@ class SiteRepository {
   }
 
   async getAllSiteInfo() {
-    return await Site.select('id', 'name', 'addr', 'area', 'reservation_open').all();
+    return await Site.select("id", "name", "addr", "area", "reservation_open")
+      .all();
   }
 }
 

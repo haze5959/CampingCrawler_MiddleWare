@@ -8,7 +8,9 @@ import {
   postFavorite,
   putUserArea,
   putUserNick,
-  reportMail,
+  createReport,
+  changeReportState,
+  deleteReport,
 } from "../controllers/user_controller.ts";
 
 const userRouter = new Router();
@@ -22,6 +24,8 @@ userRouter
   .post("/user/favorite", postFavorite)
   .delete("/user/favorite/:token", deleteFavorite)
   .delete("/user/:token", deleteUser)
-  .post("/report", reportMail);
+  .post("/report", createReport)
+  .put("/report", changeReportState)
+  .delete("/report", deleteReport);
 
 export { userRouter };
