@@ -1,4 +1,4 @@
-import { Application } from "https://deno.land/x/oak@v9.0.1/mod.ts";
+import { Application } from "https://deno.land/x/oak/mod.ts";
 import { monthly, weekly } from "https://deno.land/x/deno_cron/cron.ts";
 import { singleton } from "./utils/singleton.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";

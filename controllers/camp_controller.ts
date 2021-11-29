@@ -1,6 +1,6 @@
 import { redisRepo } from "../repository/redisRepository.ts";
 import { siteRepo } from "../repository/dbRepository.ts";
-import { helpers, RouterContext } from "https://deno.land/x/oak@v9.0.1/mod.ts";
+import { helpers, RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { singleton } from "../utils/singleton.ts";
 
 export const getCampAvailDatesList = async (ctx: RouterContext) => {
@@ -12,8 +12,8 @@ export const getCampAvailDatesList = async (ctx: RouterContext) => {
     const infoJson = infos.map((value) => {
       const json = {
         "site": value.name,
-        "availDates": value.availDates,
-        "updatedDate": value.updatedDate,
+        "avail_dates": value.availDates,
+        "updated_date": value.updatedDate,
       };
 
       return json;
@@ -34,13 +34,13 @@ export const getCampAvailDates = async (ctx: RouterContext) => {
   const params = helpers.getQuery(ctx);
   const campKey = params['id'];
   
-  if (campKey) {
+  if (campKey != undefined) {
     try {
       const info = await redisRepo.getCampAvailDates(campKey);
       const json = {
         "site": info.name,
-        "availDates": info.availDates,
-        "updatedDate": info.updatedDate,
+        "avail_dates": info.availDates,
+        "updated_date": info.updatedDate,
       };
 
       ctx.response.body = {
@@ -60,15 +60,15 @@ export const getCampAvailDatesDatail = async (ctx: RouterContext) => {
   const params = helpers.getQuery(ctx);
   const campKey = params['id'];
 
-  if (campKey) {
+  if (campKey != undefined) {
     const campKey: string = params.id;
     try {
       const info = await redisRepo.getCampAvailDatesDatail(campKey);
       const siteInfo = await siteRepo.getSiteInfo(campKey);
       const json = {
         "site": info.name,
-        "availDates": info.availDates,
-        "updatedDate": info.updatedDate,
+        "avail_dates": info.availDates,
+        "updated_date": info.updatedDate,
       };
 
       ctx.response.body = {
@@ -96,7 +96,7 @@ export const getCampSiteDetail = async (ctx: RouterContext) => {
   const params = helpers.getQuery(ctx);
   const campKey = params['id'];
 
-  if (campKey) {
+  if (campKey != undefined) {
     const siteInfo = await siteRepo.getSiteInfo(campKey);
     ctx.response.body = { result: true, msg: "", data: siteInfo };
   } else {

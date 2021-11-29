@@ -49,41 +49,45 @@ class PostsRepository {
     };
   }
 
-  async getPostsWith(page: number, typeArr: string[]) {
+  async getAllPostsWith(page: number) {
     const amountOfPage = 10;
 
-    if (typeArr.length == 0) {
-      return await Posts.select(
-        "id",
-        "type",
-        "title",
-        "nick",
-        "updated_at",
-        "comment_count",
-      )
-        .orderBy("desc")
-        .offset(amountOfPage * page)
-        .take(amountOfPage)
-        .get();
-    } else {
-      const query = Posts.select(
-        "id",
-        "type",
-        "title",
-        "nick",
-        "updated_at",
-        "comment_count",
-      );
-      for (const type in typeArr) {
-        query.where("type", Number(type));
-      }
+    return await Posts.select(
+      "id",
+      "type",
+      "title",
+      "nick",
+      "updated_at",
+      "comment_count")
+      .orderBy("desc")
+      .offset(amountOfPage * page)
+      .take(amountOfPage)
+      .get();
+  }
 
-      return await query
-        .orderBy("desc")
-        .offset(amountOfPage * page)
-        .take(amountOfPage)
-        .get();
+  async getPostsWith(page: number, isNotice: boolean) {
+    const amountOfPage = 10;
+
+    const query = Posts.select(
+      "id",
+      "type",
+      "title",
+      "nick",
+      "updated_at",
+      "comment_count",
+    );
+
+    if (isNotice) {
+      query.where("type", 0);
+    } else {
+      query.where("type", ">", 0);
     }
+
+    return await query
+      .orderBy("desc")
+      .offset(amountOfPage * page)
+      .take(amountOfPage)
+      .get();
   }
 
   async getComment(id: number) {

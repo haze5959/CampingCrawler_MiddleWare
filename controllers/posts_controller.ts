@@ -1,72 +1,84 @@
 import { postsRepo, userRepo } from "../repository/dbRepository.ts";
-import { RouterContext } from "https://deno.land/x/oak@v9.0.1/mod.ts";
+import { helpers, RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
-
-import { User } from "../models/user.ts";
 
 const emptyNick = "익명의 캠퍼";
 
 export const getHomePosts = async (ctx: RouterContext) => {
   try {
     const data = await postsRepo.getHomePosts();
-    response.body = { result: true, msg: "", data: data };
+    ctx.response.body = { result: true, msg: "", data: data };
   } catch (error) {
     console.error(error);
-    response.body = { result: false, msg: error };
+    ctx.response.body = { result: false, msg: error };
   }
 };
 
 export const getPosts = async (ctx: RouterContext) => {
-  if (params && params.id) {
-    const id = Number(params.id);
-    const token = request.url.searchParams.get("token") as string;
+  const params = helpers.getQuery(ctx);
+  const id = Number(params.id);
+  const token = params.token;
+
+  if (id != undefined && token != undefined) {
     try {
       const info = await postsRepo.getPosts(id);
       if (info != null && info.posts["type"] == 3) {
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
-          response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: "auth fail" };
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
           const nick = userResult?.user["nick"];
           if (nick != info.posts["nick"]) {
-            response.body = { result: false, msg: "Auth Fail" };
+            ctx.response.body = { result: false, msg: "Auth Fail" };
             return;
           }
         }
       }
 
-      response.body = { result: true, msg: "", data: info };
+      ctx.response.body = { result: true, msg: "", data: info };
     } catch (error) {
       console.error(error);
-      response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: "param fail" };
   }
 };
 
 export const getPostsPage = async (ctx: RouterContext) => {
-  if (params && params.page) {
-    const page = Number(params.page);
-    const typeArr: string[] = request.url.searchParams.getAll("type");
-    try {
-      const info = await postsRepo.getPostsWith(page, typeArr);
-      response.body = { result: true, msg: "", data: info };
-    } catch (error) {
-      console.error(error);
-      response.body = { result: false, msg: error };
+  const params = helpers.getQuery(ctx);
+  const page = Number(params.page);
+  const isNotice = Boolean(params.is_notice);
+
+  if (page != undefined) {
+    if (isNotice != undefined) {
+      try {
+        const info = await postsRepo.getPostsWith(page, isNotice);
+        ctx.response.body = { result: true, msg: "", data: info };
+      } catch (error) {
+        console.error(error);
+        ctx.response.body = { result: false, msg: error };
+      }
+    } else {
+      try {
+        const info = await postsRepo.getAllPostsWith(page);
+        ctx.response.body = { result: true, msg: "", data: info };
+      } catch (error) {
+        console.error(error);
+        ctx.response.body = { result: false, msg: error };
+      }
     }
   } else {
-    response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: "param fail" };
   }
 };
 
 export const postPosts = async (ctx: RouterContext) => {
-  if (request.hasBody) {
+  if (ctx.request.hasBody) {
     try {
-      const body = await request.body({ type: "json" }).value;
+      const body = await ctx.request.body({ type: "json" }).value;
       const type = body["type"] as number;
       const title = body["title"] as string;
       const bodyVal = body["body"] as string;
@@ -77,7 +89,7 @@ export const postPosts = async (ctx: RouterContext) => {
       if (token != null) {
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
-          response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: "auth fail" };
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
@@ -88,7 +100,7 @@ export const postPosts = async (ctx: RouterContext) => {
 
       if (type == 0) { // 공지사항이라면
         if (level < 2) {
-          response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: "auth fail" };
           return;
         }
       }
@@ -101,23 +113,23 @@ export const postPosts = async (ctx: RouterContext) => {
       );
 
       if (result.affectedRows != null) {
-        response.body = { result: true, msg: "" };
+        ctx.response.body = { result: true, msg: "" };
       } else {
-        response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: "not excuted" };
       }
     } catch (error) {
       console.error(error);
-      response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: "no params." };
   }
 };
 
 export const postComment = async (ctx: RouterContext) => {
-  if (request.hasBody) {
+  if (ctx.request.hasBody) {
     try {
-      const body = await request.body({ type: "json" }).value;
+      const body = await ctx.request.body({ type: "json" }).value;
       const postId = body["post_id"] as number;
       const comment = body["comment"] as string;
       const token = body["token"] as string | null;
@@ -126,7 +138,7 @@ export const postComment = async (ctx: RouterContext) => {
       if (token != null) {
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
-          response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: "auth fail" };
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
@@ -136,96 +148,97 @@ export const postComment = async (ctx: RouterContext) => {
 
       const result = await postsRepo.createComment(postId, nick, comment);
       if (result != undefined) {
-        response.body = { result: true, msg: "" };
+        ctx.response.body = { result: true, msg: "" };
       } else {
-        response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: "not excuted" };
       }
     } catch (error) {
       console.error(error);
-      response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: "no params." };
   }
 };
 
 export const deletePosts = async (ctx: RouterContext) => {
-  if (params && params.token) {
+  const params = helpers.getQuery(ctx);
+  const token = params.token;
+  const id = Number(params.id);
+  if (token != undefined && id != undefined) {
     try {
-      const token: string = params.token;
-      const id = Number(request.url.searchParams.get("id"));
-
       const info = await postsRepo.getPosts(id);
       if (info == null) {
-        response.body = { result: false, msg: "Posts is not existed." };
+        ctx.response.body = { result: false, msg: "Posts is not existed." };
         return;
       }
 
       const authInfo = await getAuthInfo(token);
       if (authInfo == null) {
-        response.body = { result: false, msg: "auth fail" };
+        ctx.response.body = { result: false, msg: "auth fail" };
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult?.user["nick"];
         if (info.posts["nick"] != nick) {
-          response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: "auth fail" };
           return;
         }
       }
 
       const result = await postsRepo.deletePosts(id);
       if (result != undefined) {
-        response.body = { result: true, msg: "" };
+        ctx.response.body = { result: true, msg: "" };
       } else {
-        response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: "not excuted" };
       }
     } catch (error) {
       console.error(error);
-      response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: "param fail" };
   }
 };
 
 export const deleteComment = async (ctx: RouterContext) => {
-  if (params && params.token) {
-    try {
-      const token: string = params.token;
-      const id = Number(request.url.searchParams.get("id"));
-      const postId = Number(request.url.searchParams.get("post_id"));
+  const params = helpers.getQuery(ctx);
+  const token = params.token;
+  const id = Number(params.id);
+  const postId = Number(params.post_id);
 
+  if (token != undefined && id != undefined && postId != undefined) {
+    try {
       const comment = await postsRepo.getComment(id);
       if (comment == null) {
-        response.body = { result: false, msg: "Comment is not existed." };
+        ctx.response.body = { result: false, msg: "Comment is not existed." };
         return;
       }
 
       const authInfo = await getAuthInfo(token);
       if (authInfo == null) {
-        response.body = { result: false, msg: "auth fail" };
+        ctx.response.body = { result: false, msg: "auth fail" };
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult?.user["nick"];
         if (comment["nick"] != nick) {
-          response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: "auth fail" };
           return;
         }
       }
 
       const result = await postsRepo.deleteComment(id, postId);
       if (result != undefined) {
-        response.body = { result: true, msg: "" };
+        ctx.response.body = { result: true, msg: "" };
       } else {
-        response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: "not excuted" };
       }
     } catch (error) {
       console.error(error);
-      response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: error };
     }
   } else {
-    response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: "param fail" };
   }
 };
