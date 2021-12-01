@@ -1,9 +1,9 @@
-import { helpers, RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 import { userRepo } from "../repository/dbRepository.ts";
 
 // 유저 정보 가져오기
-export const getUser = async (ctx: RouterContext) => {
+export async function getUser(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
 
@@ -27,7 +27,11 @@ export const getUser = async (ctx: RouterContext) => {
           if (signUpResult == null) {
             ctx.response.body = { result: false, msg: "sign up fail" };
           } else {
-            ctx.response.body = { result: true, msg: "sign up", data: signUpResult };
+            ctx.response.body = {
+              result: true,
+              msg: "sign up",
+              data: signUpResult,
+            };
           }
         } else {
           ctx.response.body = { result: true, msg: "", data: userResult };
@@ -42,23 +46,23 @@ export const getUser = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
 function makeid(length: number): string {
-  var result = "";
+  let result = "";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(
       Math.random() *
-      charactersLength,
+        charactersLength,
     ));
   }
   return result;
 }
 
-export const putUserNick = async (ctx: RouterContext) => {
+export async function putUserNick(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -75,7 +79,11 @@ export const putUserNick = async (ctx: RouterContext) => {
       if (authInfo != null) {
         const userResult = await userRepo.getUser(authInfo.uid);
         const oldNick = userResult.user.nick as string;
-        const result = await userRepo.updateUserNick(authInfo.uid, nick, oldNick);
+        const result = await userRepo.updateUserNick(
+          authInfo.uid,
+          nick,
+          oldNick,
+        );
         if (result != undefined) {
           ctx.response.body = { result: true, msg: "" };
         } else {
@@ -91,9 +99,9 @@ export const putUserNick = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const putUserArea = async (ctx: RouterContext) => {
+export async function putUserArea(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -118,10 +126,10 @@ export const putUserArea = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
 // 유저 삭제하기
-export const deleteUser = async (ctx: RouterContext) => {
+export async function deleteUser(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
 
@@ -145,10 +153,10 @@ export const deleteUser = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
 // 신고하기
-export const createReport = async (ctx: RouterContext) => {
+export async function createReport(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -166,10 +174,10 @@ export const createReport = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
 // 신고 상태 수정
-export const changeReportState = async (ctx: RouterContext) => {
+export async function changeReportState(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -185,10 +193,10 @@ export const changeReportState = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
 // 신고 삭제
-export const deleteReport = async (ctx: RouterContext) => {
+export async function deleteReport(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -203,10 +211,10 @@ export const deleteReport = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
 // 푸시 정보 가져오기
-export const getPushInfo = async (ctx: RouterContext) => {
+export async function getPushInfo(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
 
@@ -221,10 +229,10 @@ export const getPushInfo = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
 // 즐겨찾는 캠핑목록 가져오기
-export const getFavorite = async (ctx: RouterContext) => {
+export async function getFavorite(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
 
@@ -239,9 +247,9 @@ export const getFavorite = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const postFavorite = async (ctx: RouterContext) => {
+export async function postFavorite(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -266,9 +274,9 @@ export const postFavorite = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const deleteFavorite = async (ctx: RouterContext) => {
+export async function deleteFavorite(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
   const campId = params.camp_id;
@@ -293,4 +301,4 @@ export const deleteFavorite = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}

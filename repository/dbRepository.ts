@@ -1,5 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
-import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
+// import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
+import { Database, MySQLConnector } from "../utils/denodb-update-deps/mod.ts";
 import { Comment, Posts } from "../models/posts.ts";
 import { User } from "../models/user.ts";
 import { Site } from "../models/site.ts";

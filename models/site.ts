@@ -1,4 +1,5 @@
-import { DataTypes, Model } from "https://deno.land/x/denodb/mod.ts";
+// import { DataTypes, Model } from "https://deno.land/x/denodb/mod.ts";
+import { DataTypes, Model } from "../utils/denodb-update-deps/mod.ts";
 import { CampArea } from "../models/campInfo.ts";
 
 export class Site extends Model {
