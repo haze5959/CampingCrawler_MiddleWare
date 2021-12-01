@@ -1,10 +1,10 @@
 import { postsRepo, userRepo } from "../repository/dbRepository.ts";
-import { helpers, RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 
 const emptyNick = "익명의 캠퍼";
 
-export const getHomePosts = async (ctx: RouterContext) => {
+export async function getHomePosts(ctx: Context) {
   try {
     const data = await postsRepo.getHomePosts();
     ctx.response.body = { result: true, msg: "", data: data };
@@ -12,9 +12,9 @@ export const getHomePosts = async (ctx: RouterContext) => {
     console.error(error);
     ctx.response.body = { result: false, msg: error };
   }
-};
+}
 
-export const getPosts = async (ctx: RouterContext) => {
+export async function getPosts(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const id = Number(params.id);
   const token = params.token;
@@ -45,9 +45,9 @@ export const getPosts = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const getPostsPage = async (ctx: RouterContext) => {
+export async function getPostsPage(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const page = Number(params.page);
   const isNotice = Boolean(params.is_notice);
@@ -73,9 +73,9 @@ export const getPostsPage = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const postPosts = async (ctx: RouterContext) => {
+export async function postPosts(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -93,7 +93,7 @@ export const postPosts = async (ctx: RouterContext) => {
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          nick = userResult.user.nick as string
+          nick = userResult.user.nick as string;
           level = userResult.user.level as number;
         }
       }
@@ -124,9 +124,9 @@ export const postPosts = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
-export const postComment = async (ctx: RouterContext) => {
+export async function postComment(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -159,9 +159,9 @@ export const postComment = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
-export const deletePosts = async (ctx: RouterContext) => {
+export async function deletePosts(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
   const id = Number(params.id);
@@ -199,9 +199,9 @@ export const deletePosts = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const deleteComment = async (ctx: RouterContext) => {
+export async function deleteComment(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const token = params.token;
   const id = Number(params.id);
@@ -241,4 +241,4 @@ export const deleteComment = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
