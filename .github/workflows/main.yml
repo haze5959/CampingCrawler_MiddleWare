@@ -21,4 +21,6 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_DEV_PRIVATE_KEY }}
         port: ${{ secrets.PORT }}
-        script: ls
+        script: |
+          cd Desktop/CampingCrawler_docker-compose/
+          docker-compose restart camp_middleware
