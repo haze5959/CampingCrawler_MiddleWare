@@ -1,7 +1,4 @@
 import type { ModelSchema } from "./model.ts";
-import { Bson } from "../deps.ts";
-
-type ObjectId = Bson.ObjectId;
 
 /** Field Types. */
 export type FieldTypeString =
@@ -75,7 +72,7 @@ export type FieldProps = {
 export type FieldType = FieldTypeString | FieldProps;
 
 export type FieldAlias = { [k: string]: string };
-export type FieldValue = number | string | boolean | Date | ObjectId | null ;
+export type FieldValue = number | string | boolean | Date | null ;
 export type FieldOptions = {
   name: string;
   type: FieldType;

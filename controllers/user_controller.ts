@@ -197,11 +197,11 @@ export async function changeReportState(ctx: Context) {
 
 // 신고 삭제
 export async function deleteReport(ctx: Context) {
-  if (ctx.request.hasBody) {
-    try {
-      const body = await ctx.request.body({ type: "json" }).value;
-      const id = body["id"] as number;
+  const params = helpers.getQuery(ctx);
+  const id = Number(params.id);
 
+  if (id != undefined) {
+    try {
       await userRepo.deleteReport(id);
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {

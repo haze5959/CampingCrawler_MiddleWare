@@ -30,31 +30,31 @@ export async function getCampAvailDatesList(ctx: Context) {
   }
 }
 
-export async function getCampAvailDates(ctx: Context) {
-  const params = helpers.getQuery(ctx);
-  const campKey = params["id"];
+// export async function getCampAvailDates(ctx: Context) {
+//   const params = helpers.getQuery(ctx);
+//   const campKey = params["id"];
 
-  if (campKey != undefined) {
-    try {
-      const info = await redisRepo.getCampAvailDates(campKey);
-      const json = {
-        "site": info.name,
-        "avail_dates": info.availDates,
-        "updated_date": info.updatedDate,
-      };
+//   if (campKey != undefined) {
+//     try {
+//       const info = await redisRepo.getCampAvailDates(campKey);
+//       const json = {
+//         "site": info.name,
+//         "avail_dates": info.availDates,
+//         "updated_date": info.updatedDate,
+//       };
 
-      ctx.response.body = {
-        result: true,
-        msg: "",
-        data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
-      };
-    } catch (error) {
-      ctx.response.body = { result: false, msg: error };
-    }
-  } else {
-    ctx.response.body = { result: false, msg: "param fail" };
-  }
-}
+//       ctx.response.body = {
+//         result: true,
+//         msg: "",
+//         data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
+//       };
+//     } catch (error) {
+//       ctx.response.body = { result: false, msg: error };
+//     }
+//   } else {
+//     ctx.response.body = { result: false, msg: "param fail" };
+//   }
+// }
 
 export async function getCampAvailDatesDatail(ctx: Context) {
   const params = helpers.getQuery(ctx);
