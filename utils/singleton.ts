@@ -53,8 +53,6 @@ class Singleton {
           }
         }
       }
-
-      console.log(this.holidaysInFourMonth);
     } catch (error) {
       console.error(error);
     }

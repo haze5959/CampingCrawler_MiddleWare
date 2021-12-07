@@ -22,7 +22,7 @@ class PostsRepository {
   async getPosts(id: number) {
     const posts = await Posts.find(id);
     const comments = await Comment.where("post_id", id)
-      .orderBy("desc")
+      .orderBy("id", "desc")
       .all();
     return {
       posts: posts,
@@ -34,13 +34,13 @@ class PostsRepository {
     const amountOfPage = 5;
     const notice = await Posts.where("type", 0)
       .select("id", "type", "title", "nick", "updated_at", "comment_count")
-      .orderBy("desc")
+      .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
 
     const posts = await Posts.where("type", ">", 0)
       .select("id", "type", "title", "nick", "updated_at", "comment_count")
-      .orderBy("desc")
+      .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
 
@@ -50,7 +50,7 @@ class PostsRepository {
     };
   }
 
-  async getAllPostsWith(page: number) {
+  async getAllPostsWith(page: number) {    
     const amountOfPage = 10;
 
     return await Posts.select(
@@ -60,8 +60,8 @@ class PostsRepository {
       "nick",
       "updated_at",
       "comment_count")
-      .orderBy("desc")
-      .offset(amountOfPage * page)
+      .orderBy("id", "desc")
+      .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
       .get();
   }
@@ -85,8 +85,8 @@ class PostsRepository {
     }
 
     return await query
-      .orderBy("desc")
-      .offset(amountOfPage * page)
+      .orderBy("id", "desc")
+      .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
       .get();
   }

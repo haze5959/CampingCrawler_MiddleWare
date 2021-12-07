@@ -4,7 +4,7 @@ import { userRepo } from "../repository/dbRepository.ts";
 
 // 유저 정보 가져오기
 export async function getUser(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
 
   if (token != undefined) {
@@ -130,7 +130,7 @@ export async function putUserArea(ctx: Context) {
 
 // 유저 삭제하기
 export async function deleteUser(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
 
   if (token != undefined) {
@@ -215,7 +215,7 @@ export async function deleteReport(ctx: Context) {
 
 // 푸시 정보 가져오기
 export async function getPushInfo(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
 
   if (token != undefined) {
@@ -233,7 +233,7 @@ export async function getPushInfo(ctx: Context) {
 
 // 즐겨찾는 캠핑목록 가져오기
 export async function getFavorite(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
 
   if (token != undefined) {
@@ -277,7 +277,7 @@ export async function postFavorite(ctx: Context) {
 }
 
 export async function deleteFavorite(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
   const campId = params.camp_id;
 

@@ -31,7 +31,7 @@ export const campAreaAllBit = CampArea.seoul + CampArea.gyeonggi +
   CampArea.chungnam + CampArea.chungbuk + CampArea.gangwon + CampArea.etc;
 
 export function campSiteWithAreaBit(bit: number): string[] {
-  var searchAreaArr: CampArea[] = [];
+  let searchAreaArr: CampArea[] = [];
 
   while (bit > 0) {
     if (bit >= CampArea.gangwon) {

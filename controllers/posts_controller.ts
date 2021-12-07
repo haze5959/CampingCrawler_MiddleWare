@@ -15,14 +15,14 @@ export async function getHomePosts(ctx: Context) {
 }
 
 export async function getPosts(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const id = Number(params.id);
-  const token = params.token;
 
-  if (id != undefined && token != undefined) {
+  if (id != undefined) {
     try {
       const info = await postsRepo.getPosts(id);
-      if (info != null && info.posts["type"] == 3) {
+      if (info.posts["type"] == 3) {
+        const token = params.token;
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
           ctx.response.body = { result: false, msg: "auth fail" };
@@ -34,6 +34,36 @@ export async function getPosts(ctx: Context) {
             ctx.response.body = { result: false, msg: "Auth Fail" };
             return;
           }
+        }
+      }
+      ctx.response.body = { result: true, msg: "", data: info };
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: error };
+    }
+  } else {
+    ctx.response.body = { result: false, msg: "param fail" };
+  }
+}
+
+export async function getSecretPosts(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const id = Number(params.id);
+  const token = params.token;
+
+  if (id != undefined && token != undefined) {
+    try {
+      const info = await postsRepo.getPosts(id);
+      const authInfo = await getAuthInfo(token);
+      if (authInfo == null) {
+        ctx.response.body = { result: false, msg: "auth fail" };
+        return;
+      } else {
+        const userResult = await userRepo.getUser(authInfo.uid);
+        const nick = userResult?.user["nick"];
+        if (nick != info.posts["nick"]) {
+          ctx.response.body = { result: false, msg: "Auth Fail" };
+          return;
         }
       }
 
@@ -48,12 +78,12 @@ export async function getPosts(ctx: Context) {
 }
 
 export async function getPostsPage(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const page = Number(params.page);
-  const isNotice = Boolean(params.is_notice);
 
   if (page != undefined) {
-    if (isNotice != undefined) {
+    if (params.is_notice != undefined) {
+      const isNotice = Boolean(params.is_notice);
       try {
         const info = await postsRepo.getPostsWith(page, isNotice);
         ctx.response.body = { result: true, msg: "", data: info };
@@ -162,7 +192,7 @@ export async function postComment(ctx: Context) {
 }
 
 export async function deletePosts(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
   const id = Number(params.id);
   if (token != undefined && id != undefined) {
@@ -202,7 +232,7 @@ export async function deletePosts(ctx: Context) {
 }
 
 export async function deleteComment(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
   const id = Number(params.id);
   const postId = Number(params.post_id);

@@ -57,7 +57,7 @@ export async function getCampAvailDatesList(ctx: Context) {
 // }
 
 export async function getCampAvailDatesDatail(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const campKey = params["id"];
 
   if (campKey != undefined) {
@@ -93,7 +93,7 @@ export function getCampSiteSimpleInfo(ctx: Context) {
 }
 
 export async function getCampSiteDetail(ctx: Context) {
-  const params = helpers.getQuery(ctx);
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const campKey = params["id"];
 
   if (campKey != undefined) {
