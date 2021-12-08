@@ -1,9 +1,9 @@
 import { redisRepo } from "../repository/redisRepository.ts";
 import { siteRepo } from "../repository/dbRepository.ts";
-import { helpers, RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { singleton } from "../utils/singleton.ts";
 
-export const getCampAvailDatesList = async (ctx: RouterContext) => {
+export async function getCampAvailDatesList(ctx: Context) {
   const params = helpers.getQuery(ctx);
   const areaBit = Number(params["area_bit"]) ?? 0;
 
@@ -28,37 +28,37 @@ export const getCampAvailDatesList = async (ctx: RouterContext) => {
     console.error(error);
     ctx.response.body = { result: false, msg: error };
   }
-};
+}
 
-export const getCampAvailDates = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
-  const campKey = params['id'];
-  
-  if (campKey != undefined) {
-    try {
-      const info = await redisRepo.getCampAvailDates(campKey);
-      const json = {
-        "site": info.name,
-        "avail_dates": info.availDates,
-        "updated_date": info.updatedDate,
-      };
+// export async function getCampAvailDates(ctx: Context) {
+//   const params = helpers.getQuery(ctx);
+//   const campKey = params["id"];
 
-      ctx.response.body = {
-        result: true,
-        msg: "",
-        data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
-      };
-    } catch (error) {
-      ctx.response.body = { result: false, msg: error };
-    }
-  } else {
-    ctx.response.body = { result: false, msg: "param fail" };
-  }
-};
+//   if (campKey != undefined) {
+//     try {
+//       const info = await redisRepo.getCampAvailDates(campKey);
+//       const json = {
+//         "site": info.name,
+//         "avail_dates": info.availDates,
+//         "updated_date": info.updatedDate,
+//       };
 
-export const getCampAvailDatesDatail = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
-  const campKey = params['id'];
+//       ctx.response.body = {
+//         result: true,
+//         msg: "",
+//         data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
+//       };
+//     } catch (error) {
+//       ctx.response.body = { result: false, msg: error };
+//     }
+//   } else {
+//     ctx.response.body = { result: false, msg: "param fail" };
+//   }
+// }
+
+export async function getCampAvailDatesDatail(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const campKey = params["id"];
 
   if (campKey != undefined) {
     const campKey: string = params.id;
@@ -86,15 +86,15 @@ export const getCampAvailDatesDatail = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const getCampSiteSimpleInfo = (ctx: RouterContext) => {
+export function getCampSiteSimpleInfo(ctx: Context) {
   ctx.response.body = { result: true, msg: "", data: singleton.siteSimpleInfo };
-};
+}
 
-export const getCampSiteDetail = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
-  const campKey = params['id'];
+export async function getCampSiteDetail(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const campKey = params["id"];
 
   if (campKey != undefined) {
     const siteInfo = await siteRepo.getSiteInfo(campKey);
@@ -102,4 +102,4 @@ export const getCampSiteDetail = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}

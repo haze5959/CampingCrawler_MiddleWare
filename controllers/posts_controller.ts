@@ -1,10 +1,10 @@
 import { postsRepo, userRepo } from "../repository/dbRepository.ts";
-import { helpers, RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 
 const emptyNick = "익명의 캠퍼";
 
-export const getHomePosts = async (ctx: RouterContext) => {
+export async function getHomePosts(ctx: Context) {
   try {
     const data = await postsRepo.getHomePosts();
     ctx.response.body = { result: true, msg: "", data: data };
@@ -12,17 +12,17 @@ export const getHomePosts = async (ctx: RouterContext) => {
     console.error(error);
     ctx.response.body = { result: false, msg: error };
   }
-};
+}
 
-export const getPosts = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
+export async function getPosts(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const id = Number(params.id);
-  const token = params.token;
 
-  if (id != undefined && token != undefined) {
+  if (id != undefined) {
     try {
       const info = await postsRepo.getPosts(id);
-      if (info != null && info.posts["type"] == 3) {
+      if (info.posts["type"] == 3) {
+        const token = params.token;
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
           ctx.response.body = { result: false, msg: "auth fail" };
@@ -36,6 +36,36 @@ export const getPosts = async (ctx: RouterContext) => {
           }
         }
       }
+      ctx.response.body = { result: true, msg: "", data: info };
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: error };
+    }
+  } else {
+    ctx.response.body = { result: false, msg: "param fail" };
+  }
+}
+
+export async function getSecretPosts(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const id = Number(params.id);
+  const token = params.token;
+
+  if (id != undefined && token != undefined) {
+    try {
+      const info = await postsRepo.getPosts(id);
+      const authInfo = await getAuthInfo(token);
+      if (authInfo == null) {
+        ctx.response.body = { result: false, msg: "auth fail" };
+        return;
+      } else {
+        const userResult = await userRepo.getUser(authInfo.uid);
+        const nick = userResult?.user["nick"];
+        if (nick != info.posts["nick"]) {
+          ctx.response.body = { result: false, msg: "Auth Fail" };
+          return;
+        }
+      }
 
       ctx.response.body = { result: true, msg: "", data: info };
     } catch (error) {
@@ -45,15 +75,15 @@ export const getPosts = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const getPostsPage = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
+export async function getPostsPage(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const page = Number(params.page);
-  const isNotice = Boolean(params.is_notice);
 
   if (page != undefined) {
-    if (isNotice != undefined) {
+    if (params.is_notice != undefined) {
+      const isNotice = Boolean(params.is_notice);
       try {
         const info = await postsRepo.getPostsWith(page, isNotice);
         ctx.response.body = { result: true, msg: "", data: info };
@@ -73,9 +103,9 @@ export const getPostsPage = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const postPosts = async (ctx: RouterContext) => {
+export async function postPosts(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -93,7 +123,7 @@ export const postPosts = async (ctx: RouterContext) => {
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
-          nick = userResult.user.nick as string
+          nick = userResult.user.nick as string;
           level = userResult.user.level as number;
         }
       }
@@ -124,9 +154,9 @@ export const postPosts = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
-export const postComment = async (ctx: RouterContext) => {
+export async function postComment(ctx: Context) {
   if (ctx.request.hasBody) {
     try {
       const body = await ctx.request.body({ type: "json" }).value;
@@ -159,10 +189,10 @@ export const postComment = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "no params." };
   }
-};
+}
 
-export const deletePosts = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
+export async function deletePosts(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
   const id = Number(params.id);
   if (token != undefined && id != undefined) {
@@ -199,10 +229,10 @@ export const deletePosts = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}
 
-export const deleteComment = async (ctx: RouterContext) => {
-  const params = helpers.getQuery(ctx);
+export async function deleteComment(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
   const id = Number(params.id);
   const postId = Number(params.post_id);
@@ -241,4 +271,4 @@ export const deleteComment = async (ctx: RouterContext) => {
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
   }
-};
+}

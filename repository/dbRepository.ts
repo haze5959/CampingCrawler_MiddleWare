@@ -1,5 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
-import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
+// import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
+import { Database, MySQLConnector } from "../utils/denodb-update-deps/mod.ts";
 import { Comment, Posts } from "../models/posts.ts";
 import { User } from "../models/user.ts";
 import { Site } from "../models/site.ts";
@@ -21,7 +22,7 @@ class PostsRepository {
   async getPosts(id: number) {
     const posts = await Posts.find(id);
     const comments = await Comment.where("post_id", id)
-      .orderBy("desc")
+      .orderBy("id", "desc")
       .all();
     return {
       posts: posts,
@@ -33,13 +34,13 @@ class PostsRepository {
     const amountOfPage = 5;
     const notice = await Posts.where("type", 0)
       .select("id", "type", "title", "nick", "updated_at", "comment_count")
-      .orderBy("desc")
+      .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
 
     const posts = await Posts.where("type", ">", 0)
       .select("id", "type", "title", "nick", "updated_at", "comment_count")
-      .orderBy("desc")
+      .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
 
@@ -49,7 +50,7 @@ class PostsRepository {
     };
   }
 
-  async getAllPostsWith(page: number) {
+  async getAllPostsWith(page: number) {    
     const amountOfPage = 10;
 
     return await Posts.select(
@@ -59,8 +60,8 @@ class PostsRepository {
       "nick",
       "updated_at",
       "comment_count")
-      .orderBy("desc")
-      .offset(amountOfPage * page)
+      .orderBy("id", "desc")
+      .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
       .get();
   }
@@ -84,8 +85,8 @@ class PostsRepository {
     }
 
     return await query
-      .orderBy("desc")
-      .offset(amountOfPage * page)
+      .orderBy("id", "desc")
+      .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
       .get();
   }
@@ -260,13 +261,13 @@ class UserRepository {
     id: number,
     state: number,
   ) {
-    return await User.where("id", id).update("state", state);
+    return await Report.where("id", id).update("state", state);
   }
 
   async deleteReport(
     id: number,
   ) {
-    return await Favorite.where("id", id)
+    return await Report.where("id", id)
       .delete();
   }
 }
