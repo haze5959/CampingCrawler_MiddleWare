@@ -7,17 +7,19 @@ import { testCheck } from "./test_utils.ts";
 // s udodeno test --allow-all ./tests/user_test.ts
 const app = new Application();
 app.use(userRouter.routes(), userRouter.allowedMethods());
-await delay(1000);
+await delay(2000);
 
-Deno.test("GET /user/:token", async () => {
-  const request = await superoak(app);
-  await request.get("/user/1")
-    .expect(testCheck);
-});
+const token = "";
+
+// Deno.test("GET /user/:token", async () => {
+//   const request = await superoak(app);
+//   await request.get(`/user/${token}`)
+//     .expect(testCheck);
+// });
 
 // Deno.test("DELETE /user/:token", async () => {
 //   const request = await superoak(app);
-//   await request.delete("/user/1")
+//   await request.delete(`/user/${token}`)
 //     .expect(testCheck);
 // });
 
@@ -25,7 +27,7 @@ Deno.test("GET /user/:token", async () => {
 //   const request = await superoak(app);
 //   await request.put("/user/area")
 //     .set("Content-Type", "application/json")
-//     .send({ "area_bit": 1, "token": "" })
+//     .send({ "area_bit": 1, "token": token })
 //     .expect(testCheck);
 // });
 
@@ -33,33 +35,33 @@ Deno.test("GET /user/:token", async () => {
 //   const request = await superoak(app);
 //   await request.put("/user/nick")
 //     .set("Content-Type", "application/json")
-//     .send({ "nick": "test2503", "token": "" })
+//     .send({ "nick": "test2503", "token": token })
 //     .expect(testCheck);
 // });
 
-Deno.test("GET /user/push/:token", async () => {
-  const request = await superoak(app);
-  await request.get("/user/push/1")
-    .expect(testCheck);
-});
+// Deno.test("GET /user/push/:token", async () => {
+//   const request = await superoak(app);
+//   await request.get(`/user/push/${token}`)
+//     .expect(testCheck);
+// });
 
-Deno.test("GET /user/favorite/:token", async () => {
-  const request = await superoak(app);
-  await request.get("/user/favorite/1")
-    .expect(testCheck);
-});
+// Deno.test("GET /user/favorite/:token", async () => {
+//   const request = await superoak(app);
+//   await request.get(`/user/favorite/${token}`)
+//     .expect(testCheck);
+// });
 
 // Deno.test("POST /user/favorite", async () => {
 //   const request = await superoak(app);
 //   await request.post("/user/favorite")
 //     .set("Content-Type", "application/json")
-//     .send({ "camp_id": "", "token": "" })
+//     .send({ "camp_id": "camp_tree", "token": token })
 //     .expect(testCheck);
 // });
 
 // Deno.test("DELETE /user/favorite/:token", async () => {
 //   const request = await superoak(app);
-//   await request.delete("/user/favorite/1?camp_id=")
+//   await request.delete(`/user/favorite/${token}?camp_id=camp_tree`)
 //     .expect(testCheck);
 // });
 
@@ -67,7 +69,7 @@ Deno.test("GET /user/favorite/:token", async () => {
 //   const request = await superoak(app);
 //   await request.post("/report")
 //     .set("Content-Type", "application/json")
-//     .send({ "id": "", "title": "", "body": "" })
+//     .send({ "id": "9999", "title": "TEST", "body": "THIS IS TEST!" })
 //     .expect(testCheck);
 // });
 
@@ -75,12 +77,12 @@ Deno.test("GET /user/favorite/:token", async () => {
 //   const request = await superoak(app);
 //   await request.put("/report")
 //     .set("Content-Type", "application/json")
-//     .send({ "id": "", "state": 0 })
+//     .send({ "id": 1, "state": 2 })
 //     .expect(testCheck);
 // });
 
 // Deno.test("DELETE /report", async () => {
 //   const request = await superoak(app);
-//   await request.delete("/report?id=999")
+//   await request.delete("/report?id=1")
 //     .expect(testCheck);
 // });

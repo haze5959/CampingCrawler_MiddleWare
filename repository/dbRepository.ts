@@ -261,13 +261,13 @@ class UserRepository {
     id: number,
     state: number,
   ) {
-    return await User.where("id", id).update("state", state);
+    return await Report.where("id", id).update("state", state);
   }
 
   async deleteReport(
     id: number,
   ) {
-    return await Favorite.where("id", id)
+    return await Report.where("id", id)
       .delete();
   }
 }
