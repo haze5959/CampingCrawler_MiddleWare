@@ -45,8 +45,8 @@ class PostsRepository {
       .get();
 
     return {
-      "notice": notice,
-      "posts": posts,
+      "notice_list": notice,
+      "posts_list": posts,
     };
   }
 
@@ -161,7 +161,7 @@ class UserRepository {
       .all();
     return {
       "user": user,
-      "favorite": favorites,
+      "favorite_list": favorites,
     };
   }
 
