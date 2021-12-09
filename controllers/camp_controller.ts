@@ -5,7 +5,11 @@ import { singleton } from "../utils/singleton.ts";
 
 export async function getCampAvailDatesList(ctx: Context) {
   const params = helpers.getQuery(ctx);
-  const areaBit = Number(params["area_bit"]) ?? 0;
+  const areaBitStr = params["area_bit"]
+  let areaBit = 0
+  if (areaBitStr) {
+    areaBit = Number(areaBitStr)
+  }
 
   try {
     const infos = await redisRepo.getCampAvailDatesWithIn(areaBit);

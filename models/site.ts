@@ -64,17 +64,17 @@ export class Site extends Model {
 }
 
 export class SiteSimpleInfo {
-  id: string;
+  key: string;
   name: string;
   addr: string;
-  area: CampArea;
-  reservationOpen: string;
+  area_bit: CampArea;
+  reservation_open: string;
 
   constructor(json: Record<string, number | string>) {
-    this.id = json["id"] as string;
+    this.key = json["id"] as string;
     this.name = json["name"] as string;
     this.addr = json["addr"] as string;
-    this.area = json["area"] as number;
-    this.reservationOpen = json["reservation_open"] as string;
+    this.area_bit = json["area"] as number;
+    this.reservation_open = json["reservation_open"] as string;
   }
 }

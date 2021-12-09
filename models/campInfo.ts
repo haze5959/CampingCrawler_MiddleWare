@@ -57,9 +57,9 @@ export function campSiteWithAreaBit(bit: number): string[] {
 
   const siteIdArr: string[] = singleton.siteSimpleInfo
     .filter((element) => {
-      return searchAreaArr.includes(element.area);
+      return searchAreaArr.includes(element.area_bit);
     })
-    .map((value) => value.id);
+    .map((value) => value.key);
 
   return siteIdArr;
 }

@@ -22,7 +22,7 @@ class RedisRepository {
     const campSiteArr = campSiteWithAreaBit(campAreaAllBit);
     const compInfoArr = Array<CampAvailDates>();
     try {
-      for (const site in campSiteArr) {
+      for (const site of campSiteArr) {
         const campAvailDates = await this.getCampAvailDates(site);
         compInfoArr.push(campAvailDates);
       }
