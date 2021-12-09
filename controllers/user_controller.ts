@@ -41,7 +41,7 @@ export async function getUser(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -94,7 +94,7 @@ export async function putUserNick(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -121,7 +121,7 @@ export async function putUserArea(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -148,7 +148,7 @@ export async function deleteUser(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -169,7 +169,7 @@ export async function createReport(ctx: Context) {
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "no params." };
@@ -188,7 +188,7 @@ export async function changeReportState(ctx: Context) {
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "no params." };
@@ -206,7 +206,7 @@ export async function deleteReport(ctx: Context) {
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "no params." };
@@ -269,7 +269,7 @@ export async function postFavorite(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -296,7 +296,7 @@ export async function deleteFavorite(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };

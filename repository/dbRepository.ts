@@ -79,9 +79,9 @@ class PostsRepository {
     );
 
     if (isNotice) {
-      query.where("type", 0);
+      query.where("type", "0");
     } else {
-      query.where("type", ">", 0);
+      query.where("type", ">", "0");
     }
 
     return await query

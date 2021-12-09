@@ -30,7 +30,7 @@ export async function getCampAvailDatesList(ctx: Context) {
     };
   } catch (error) {
     console.error(error);
-    ctx.response.body = { result: false, msg: error };
+    ctx.response.body = { result: false, msg: "server error" };
   }
 }
 
@@ -53,7 +53,7 @@ export async function getCampAvailDatesList(ctx: Context) {
 //         data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
 //       };
 //     } catch (error) {
-//       ctx.response.body = { result: false, msg: error };
+//       ctx.response.body = { result: false, msg: "server error" };
 //     }
 //   } else {
 //     ctx.response.body = { result: false, msg: "param fail" };
@@ -85,7 +85,8 @@ export async function getCampAvailDatesDatail(ctx: Context) {
         },
       };
     } catch (error) {
-      ctx.response.body = { result: false, msg: error };
+      console.error(error);
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };

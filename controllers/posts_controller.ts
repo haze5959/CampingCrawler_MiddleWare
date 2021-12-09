@@ -10,7 +10,7 @@ export async function getHomePosts(ctx: Context) {
     ctx.response.body = { result: true, msg: "", data: data };
   } catch (error) {
     console.error(error);
-    ctx.response.body = { result: false, msg: error };
+    ctx.response.body = { result: false, msg: "server error" };
   }
 }
 
@@ -39,7 +39,7 @@ export async function getPosts(ctx: Context) {
       ctx.response.body = { result: true, msg: "", data: info };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -70,7 +70,7 @@ export async function getSecretPosts(ctx: Context) {
       ctx.response.body = { result: true, msg: "", data: info };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -89,7 +89,7 @@ export async function getPostsPage(ctx: Context) {
         ctx.response.body = { result: true, msg: "", data: info };
       } catch (error) {
         console.error(error);
-        ctx.response.body = { result: false, msg: error };
+        ctx.response.body = { result: false, msg: "server error" };
       }
     } else {
       try {
@@ -97,7 +97,7 @@ export async function getPostsPage(ctx: Context) {
         ctx.response.body = { result: true, msg: "", data: info };
       } catch (error) {
         console.error(error);
-        ctx.response.body = { result: false, msg: error };
+        ctx.response.body = { result: false, msg: "server error" };
       }
     }
   } else {
@@ -149,7 +149,7 @@ export async function postPosts(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "no params." };
@@ -184,7 +184,7 @@ export async function postComment(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "no params." };
@@ -224,7 +224,7 @@ export async function deletePosts(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
@@ -266,7 +266,7 @@ export async function deleteComment(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: "param fail" };
