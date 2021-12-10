@@ -42,7 +42,7 @@ export async function getUser(ctx: Context) {
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: "server error" };
     }
   } else {
     ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
