@@ -1,6 +1,7 @@
 import { postsRepo, userRepo } from "../repository/dbRepository.ts";
 import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
+import { ErrorMessage } from "../utils/error_msg.ts";
 
 const emptyNick = "익명의 캠퍼";
 
@@ -10,7 +11,7 @@ export async function getHomePosts(ctx: Context) {
     ctx.response.body = { result: true, msg: "", data: data };
   } catch (error) {
     console.error(error);
-    ctx.response.body = { result: false, msg: error };
+    ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
   }
 }
 
@@ -25,13 +26,13 @@ export async function getPosts(ctx: Context) {
         const token = params.token;
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
-          ctx.response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
           const nick = userResult?.user["nick"];
           if (nick != info.posts["nick"]) {
-            ctx.response.body = { result: false, msg: "Auth Fail" };
+            ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
             return;
           }
         }
@@ -39,10 +40,10 @@ export async function getPosts(ctx: Context) {
       ctx.response.body = { result: true, msg: "", data: info };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -56,13 +57,13 @@ export async function getSecretPosts(ctx: Context) {
       const info = await postsRepo.getPosts(id);
       const authInfo = await getAuthInfo(token);
       if (authInfo == null) {
-        ctx.response.body = { result: false, msg: "auth fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult?.user["nick"];
         if (nick != info.posts["nick"]) {
-          ctx.response.body = { result: false, msg: "Auth Fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         }
       }
@@ -70,10 +71,10 @@ export async function getSecretPosts(ctx: Context) {
       ctx.response.body = { result: true, msg: "", data: info };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -83,13 +84,14 @@ export async function getPostsPage(ctx: Context) {
 
   if (page != undefined) {
     if (params.is_notice != undefined) {
-      const isNotice = Boolean(params.is_notice);
+      const isNotice = params.is_notice == "true";
+      
       try {
         const info = await postsRepo.getPostsWith(page, isNotice);
         ctx.response.body = { result: true, msg: "", data: info };
       } catch (error) {
         console.error(error);
-        ctx.response.body = { result: false, msg: error };
+        ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
       }
     } else {
       try {
@@ -97,11 +99,11 @@ export async function getPostsPage(ctx: Context) {
         ctx.response.body = { result: true, msg: "", data: info };
       } catch (error) {
         console.error(error);
-        ctx.response.body = { result: false, msg: error };
+        ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
       }
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -119,7 +121,7 @@ export async function postPosts(ctx: Context) {
       if (token != null) {
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
-          ctx.response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
@@ -130,7 +132,7 @@ export async function postPosts(ctx: Context) {
 
       if (type == 0) { // 공지사항이라면
         if (level < 2) {
-          ctx.response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         }
       }
@@ -145,14 +147,14 @@ export async function postPosts(ctx: Context) {
       if (result.affectedRows != null) {
         ctx.response.body = { result: true, msg: "" };
       } else {
-        ctx.response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -168,7 +170,7 @@ export async function postComment(ctx: Context) {
       if (token != null) {
         const authInfo = await getAuthInfo(token);
         if (authInfo == null) {
-          ctx.response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         } else {
           const userResult = await userRepo.getUser(authInfo.uid);
@@ -180,14 +182,14 @@ export async function postComment(ctx: Context) {
       if (result != undefined) {
         ctx.response.body = { result: true, msg: "" };
       } else {
-        ctx.response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -199,19 +201,19 @@ export async function deletePosts(ctx: Context) {
     try {
       const info = await postsRepo.getPosts(id);
       if (info == null) {
-        ctx.response.body = { result: false, msg: "Posts is not existed." };
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXIST };
         return;
       }
 
       const authInfo = await getAuthInfo(token);
       if (authInfo == null) {
-        ctx.response.body = { result: false, msg: "auth fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult?.user["nick"];
         if (info.posts["nick"] != nick) {
-          ctx.response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         }
       }
@@ -220,14 +222,14 @@ export async function deletePosts(ctx: Context) {
       if (result != undefined) {
         ctx.response.body = { result: true, msg: "" };
       } else {
-        ctx.response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -241,19 +243,19 @@ export async function deleteComment(ctx: Context) {
     try {
       const comment = await postsRepo.getComment(id);
       if (comment == null) {
-        ctx.response.body = { result: false, msg: "Comment is not existed." };
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXIST };
         return;
       }
 
       const authInfo = await getAuthInfo(token);
       if (authInfo == null) {
-        ctx.response.body = { result: false, msg: "auth fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
         return;
       } else {
         const userResult = await userRepo.getUser(authInfo.uid);
         const nick = userResult?.user["nick"];
         if (comment["nick"] != nick) {
-          ctx.response.body = { result: false, msg: "auth fail" };
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
           return;
         }
       }
@@ -262,13 +264,13 @@ export async function deleteComment(ctx: Context) {
       if (result != undefined) {
         ctx.response.body = { result: true, msg: "" };
       } else {
-        ctx.response.body = { result: false, msg: "not excuted" };
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXIST };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }

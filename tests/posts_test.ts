@@ -32,9 +32,9 @@ Deno.test("GET /post/:id/:token", async () => {
 
 Deno.test("GET /post/list/:page", async () => {
   const request = await superoak(app);
-  await request.get("/post/list/1")
+  await request.get("/post/list/1?is_notice=true")
     .expect(testCheck)
-    // .on("response", (res) => { console.log(res.body); })
+    .on("response", (res) => { console.log(res.body); })
 });
 
 // Deno.test("POST /post", async () => {

@@ -2,6 +2,7 @@ import { redisRepo } from "../repository/redisRepository.ts";
 import { siteRepo } from "../repository/dbRepository.ts";
 import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { singleton } from "../utils/singleton.ts";
+import { ErrorMessage } from "../utils/error_msg.ts";
 
 export async function getCampAvailDatesList(ctx: Context) {
   const params = helpers.getQuery(ctx);
@@ -30,7 +31,7 @@ export async function getCampAvailDatesList(ctx: Context) {
     };
   } catch (error) {
     console.error(error);
-    ctx.response.body = { result: false, msg: error };
+    ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
   }
 }
 
@@ -53,10 +54,10 @@ export async function getCampAvailDatesList(ctx: Context) {
 //         data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
 //       };
 //     } catch (error) {
-//       ctx.response.body = { result: false, msg: error };
+//       ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
 //     }
 //   } else {
-//     ctx.response.body = { result: false, msg: "param fail" };
+//     ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
 //   }
 // }
 
@@ -85,10 +86,11 @@ export async function getCampAvailDatesDatail(ctx: Context) {
         },
       };
     } catch (error) {
-      ctx.response.body = { result: false, msg: error };
+      console.error(error);
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -104,6 +106,6 @@ export async function getCampSiteDetail(ctx: Context) {
     const siteInfo = await siteRepo.getSiteInfo(campKey);
     ctx.response.body = { result: true, msg: "", data: siteInfo };
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }

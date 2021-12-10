@@ -1,6 +1,7 @@
 import { Context, helpers } from "https://deno.land/x/oak/mod.ts";
 import { getAuthInfo } from "../utils/auth.ts";
 import { userRepo } from "../repository/dbRepository.ts";
+import { ErrorMessage } from "../utils/error_msg.ts";
 
 // 유저 정보 가져오기
 export async function getUser(ctx: Context) {
@@ -25,7 +26,7 @@ export async function getUser(ctx: Context) {
           await userRepo.createUser(authInfo.uid, name);
           const signUpResult = await userRepo.getUser(authInfo.uid);
           if (signUpResult == null) {
-            ctx.response.body = { result: false, msg: "sign up fail" };
+            ctx.response.body = { result: false, msg: ErrorMessage.SIGN_UP_FAIL};
           } else {
             ctx.response.body = {
               result: true,
@@ -37,14 +38,14 @@ export async function getUser(ctx: Context) {
           ctx.response.body = { result: true, msg: "", data: userResult };
         }
       } else {
-        ctx.response.body = { result: false, msg: "auth fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
       }
     } catch (error) {
       console.error(error);
       ctx.response.body = { result: false, msg: error };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -71,7 +72,7 @@ export async function putUserNick(ctx: Context) {
 
       const isExist = await userRepo.checkUserNick(nick);
       if (isExist) {
-        ctx.response.body = { result: false, msg: "이미 존재하는 닉네임입니다." };
+        ctx.response.body = { result: false, msg: ErrorMessage.ALREADY_EXIST };
         return;
       }
 
@@ -87,17 +88,17 @@ export async function putUserNick(ctx: Context) {
         if (result != undefined) {
           ctx.response.body = { result: true, msg: "" };
         } else {
-          ctx.response.body = { result: false, msg: "not excuted" };
+          ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
         }
       } else {
-        ctx.response.body = { result: false, msg: "Auth Fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -114,17 +115,17 @@ export async function putUserArea(ctx: Context) {
         if (result != undefined) {
           ctx.response.body = { result: true, msg: "" };
         } else {
-          ctx.response.body = { result: false, msg: "not excuted" };
+          ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
         }
       } else {
-        ctx.response.body = { result: false, msg: "Auth Fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -144,14 +145,15 @@ export async function deleteUser(ctx: Context) {
         await userRepo.deleteUser(uid);
         ctx.response.body = { result: true, msg: "" };
       } else {
-        ctx.response.body = { result: false, msg: json["msg"] };
+        console.error(json["msg"]);
+        ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -169,10 +171,10 @@ export async function createReport(ctx: Context) {
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -188,10 +190,10 @@ export async function changeReportState(ctx: Context) {
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -206,10 +208,10 @@ export async function deleteReport(ctx: Context) {
       ctx.response.body = { result: true, msg: "" };
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "no params." };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -224,10 +226,10 @@ export async function getPushInfo(ctx: Context) {
       const pushInfo = await userRepo.getUserPushInfo(authInfo.uid);
       ctx.response.body = { result: true, msg: "", data: pushInfo };
     } else {
-      ctx.response.body = { result: false, msg: "Auth Fail" };
+      ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -242,10 +244,10 @@ export async function getFavorite(ctx: Context) {
       const favorites = await userRepo.getFavorite(authInfo.uid);
       ctx.response.body = { result: true, msg: "", data: favorites };
     } else {
-      ctx.response.body = { result: false, msg: "Auth Fail" };
+      ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -262,17 +264,17 @@ export async function postFavorite(ctx: Context) {
         if (result.affectedRows != null) {
           ctx.response.body = { result: true, msg: "" };
         } else {
-          ctx.response.body = { result: false, msg: "not excuted" };
+          ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
         }
       } else {
-        ctx.response.body = { result: false, msg: "Auth Fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
 
@@ -289,16 +291,16 @@ export async function deleteFavorite(ctx: Context) {
         if (result != undefined) {
           ctx.response.body = { result: true, msg: "" };
         } else {
-          ctx.response.body = { result: false, msg: "not excuted" };
+          ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
         }
       } else {
-        ctx.response.body = { result: false, msg: "Auth Fail" };
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
       }
     } catch (error) {
       console.error(error);
-      ctx.response.body = { result: false, msg: error };
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
-    ctx.response.body = { result: false, msg: "param fail" };
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
   }
 }
