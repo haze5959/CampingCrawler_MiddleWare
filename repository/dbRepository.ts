@@ -50,7 +50,7 @@ class PostsRepository {
     };
   }
 
-  async getAllPostsWith(page: number) {    
+  async getAllPostsWith(page: number) {
     const amountOfPage = 10;
 
     return await Posts.select(
@@ -59,7 +59,8 @@ class PostsRepository {
       "title",
       "nick",
       "updated_at",
-      "comment_count")
+      "comment_count",
+    )
       .orderBy("id", "desc")
       .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
@@ -112,35 +113,57 @@ class PostsRepository {
   }
 
   async createComment(postId: number, nick: string, body: string) {
-    return await db.transaction(async () => {
-      const comment = new Comment();
-      comment.post_id = postId;
-      comment.nick = nick;
-      comment.comment = body;
-      await comment.save();
-
-      const posts = await Posts.find(postId);
-      const commentCount = posts.comment_count as number;
-      posts.comment_count = commentCount + 1;
-      await posts.update();
+    await Comment.create({
+      post_id: postId,
+      nick: nick,
+      comment: body,
     });
+
+    const posts = await Posts.find(postId);
+    const commentCount = posts.comment_count as number;
+    posts.comment_count = commentCount + 1;
+    return await posts.update();
+
+    // 트랜젝션에 문제가 있음. denoDB 업데이트 필요
+    // return await db.transaction(async () => {
+    //   await Comment.create({
+    //     post_id: postId,
+    //     nick: nick,
+    //     comment: body,
+    //    });
+
+    //   const posts = await Posts.find(postId);
+    //   const commentCount = posts.comment_count as number;
+    //   posts.comment_count = commentCount + 1;
+    //   await posts.update();
+    // });
   }
 
   async deletePosts(id: number) {
-    return await db.transaction(async () => {
-      await Posts.deleteById(id);
-      await Comment.where("post_id", id).delete();
-    });
+    await Posts.deleteById(id);
+    return await Comment.where("post_id", id).delete();
+    // 트랜젝션에 문제가 있음. denoDB 업데이트 필요
+    // return await db.transaction(async () => {
+    //   await Posts.deleteById(id);
+    //   await Comment.where("post_id", id).delete();
+    // });
   }
 
   async deleteComment(id: number, postId: number) {
-    return await db.transaction(async () => {
-      const posts = await Posts.find(postId);
-      const commentCount = posts.comment_count as number;
-      posts.comment_count = commentCount - 1;
-      await posts.update();
-      await await Comment.where("id", id).delete();
-    });
+    const posts = await Posts.find(postId);
+    const commentCount = posts.comment_count as number;
+    posts.comment_count = commentCount - 1;
+    await posts.update();
+    return await await Comment.where("id", id).delete();
+
+    // 트랜젝션에 문제가 있음. denoDB 업데이트 필요
+    // return await db.transaction(async () => {
+    //   const posts = await Posts.find(postId);
+    //   const commentCount = posts.comment_count as number;
+    //   posts.comment_count = commentCount - 1;
+    //   await posts.update();
+    //   await await Comment.where("id", id).delete();
+    // });
   }
 }
 
@@ -212,11 +235,15 @@ class UserRepository {
     nick: string,
     oldNick: string,
   ) {
-    return await db.transaction(async () => {
-      await Posts.where("nick", oldNick).update("nick", nick);
-      await Comment.where("nick", oldNick).update("nick", nick);
-      await User.where("user_id", uid).update("nick", nick);
-    });
+    await Posts.where("nick", oldNick).update("nick", nick);
+    await Comment.where("nick", oldNick).update("nick", nick);
+    return await User.where("user_id", uid).update("nick", nick);
+    // 트랜젝션에 문제가 있음. denoDB 업데이트 필요
+    // return await db.transaction(async () => {
+    //   await Posts.where("nick", oldNick).update("nick", nick);
+    //   await Comment.where("nick", oldNick).update("nick", nick);
+    //   await User.where("user_id", uid).update("nick", nick);
+    // });
   }
 
   async updateUserArea(

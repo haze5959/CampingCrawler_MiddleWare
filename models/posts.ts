@@ -47,4 +47,9 @@ export class Comment extends Model {
     nick: DataTypes.string(20),
     comment: DataTypes.TEXT,
   };
+
+  id!: number
+  post_id!: number
+  nick!: string
+  comment!: string
 }
