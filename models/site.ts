@@ -45,6 +45,18 @@ export class Site extends Model {
       length: 15,
     },
   };
+
+  id!: string;
+  name!: string;
+  addr!: string;
+  desc!: string;
+  phone!: string;
+  lat!: number;
+  lon!: number;
+  area!: number;
+  homepage_url!: string;
+  reservation_url!: string;
+  reservation_open!: string;
 }
 
 export class SiteSimpleInfo {

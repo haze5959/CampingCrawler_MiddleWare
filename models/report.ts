@@ -35,4 +35,9 @@ export class Report extends Model {
   static defaults = {
     state: 0,
   };
+
+  id!: number;
+  user_id!: string;
+  title!: string;
+  body!: string;
 }
