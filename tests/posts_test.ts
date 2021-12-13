@@ -45,13 +45,13 @@ await delay(1000);
 //     .expect(testCheck);
 // });
 
-Deno.test("POST /comment", async () => {
-  const request = await superoak(app);
-  await request.post("/comment")
-    .set("Content-Type", "application/json")
-    .send('{"post_id":2, "comment":"oqoq TEST 입니다!!"}')
-    .expect(testCheck);
-});
+// Deno.test("POST /comment", async () => {
+//   const request = await superoak(app);
+//   await request.post("/comment")
+//     .set("Content-Type", "application/json")
+//     .send('{"post_id":2, "comment":"oqoq TEST 입니다!!"}')
+//     .expect(testCheck);
+// });
 
 // Deno.test("DELETE /post/:token", async () => {
 //   const request = await superoak(app);

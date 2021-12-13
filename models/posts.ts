@@ -19,6 +19,14 @@ export class Posts extends Model {
     comment_count: DataTypes.INTEGER,
     secret_key: DataTypes.string(40),
   };
+
+  id!: number;
+  type!: number;
+  title!: string;
+  body!: string;
+  nick!: string;
+  comment_count!: number;
+  secret_key!: string;
 }
 
 export class Comment extends Model {
@@ -37,8 +45,8 @@ export class Comment extends Model {
     comment: DataTypes.TEXT,
   };
 
-  id!: number
-  post_id!: number
-  nick!: string
-  comment!: string
+  id!: number;
+  post_id!: number;
+  nick!: string;
+  comment!: string;
 }
