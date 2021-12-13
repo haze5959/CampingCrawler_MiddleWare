@@ -12,30 +12,30 @@ await singleton.updateHolidayInFourMonth();
 await singleton.updatesiteSimpleInfo();
 await delay(1000);
 
-Deno.test("GET /home", async () => {
-  const request = await superoak(app);
-  await request.get("/home")
-    .expect(testCheck);
-});
+// Deno.test("GET /home", async () => {
+//   const request = await superoak(app);
+//   await request.get("/home")
+//     .expect(testCheck);
+// });
 
-Deno.test("GET /post/:id", async () => {
-  const request = await superoak(app);
-  await request.get("/post/1")
-    .expect(testCheck);
-});
+// Deno.test("GET /post/:id", async () => {
+//   const request = await superoak(app);
+//   await request.get("/post/1")
+//     .expect(testCheck);
+// });
 
-Deno.test("GET /post/:id/:token", async () => {
-  const request = await superoak(app);
-  await request.get("/post/1")
-    .expect(testCheck);
-});
+// Deno.test("GET /post/:id/:token", async () => {
+//   const request = await superoak(app);
+//   await request.get("/post/1")
+//     .expect(testCheck);
+// });
 
-Deno.test("GET /post/list/:page", async () => {
-  const request = await superoak(app);
-  await request.get("/post/list/1?is_notice=true")
-    .expect(testCheck)
-    .on("response", (res) => { console.log(res.body); })
-});
+// Deno.test("GET /post/list/:page", async () => {
+//   const request = await superoak(app);
+//   await request.get("/post/list/1?is_notice=true")
+//     .expect(testCheck)
+//     .on("response", (res) => { console.log(res.body); })
+// });
 
 // Deno.test("POST /post", async () => {
 //   const request = await superoak(app);
@@ -45,13 +45,13 @@ Deno.test("GET /post/list/:page", async () => {
 //     .expect(testCheck);
 // });
 
-// Deno.test("POST /comment", async () => {
-//   const request = await superoak(app);
-//   await request.post("/comment")
-//     .set("Content-Type", "application/json")
-//     .send('{"post_id":1, "comment":"12/13 TEST 입니다!!"}')
-//     .expect(testCheck);
-// });
+Deno.test("POST /comment", async () => {
+  const request = await superoak(app);
+  await request.post("/comment")
+    .set("Content-Type", "application/json")
+    .send('{"post_id":2, "comment":"oqoq TEST 입니다!!"}')
+    .expect(testCheck);
+});
 
 // Deno.test("DELETE /post/:token", async () => {
 //   const request = await superoak(app);

@@ -14,12 +14,10 @@ export class Favorite extends Model {
         user_id: {
             type: DataTypes.STRING,
             length: 30,
-            allowNull: false,
         },
         camp_id: {
             type: DataTypes.STRING,
             length: 20,
-            allowNull: false,
         },
     };
 }

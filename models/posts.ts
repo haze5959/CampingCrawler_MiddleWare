@@ -9,21 +9,14 @@ export class Posts extends Model {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false,
       unique: true,
       autoIncrement: true,
     },
-    type: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    type: DataTypes.INTEGER,
     title: DataTypes.string(45),
     body: DataTypes.TEXT,
     nick: DataTypes.string(20),
-    comment_count: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    comment_count: DataTypes.INTEGER,
     secret_key: DataTypes.string(40),
   };
 }
@@ -36,14 +29,10 @@ export class Comment extends Model {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false,
       unique: true,
       autoIncrement: true,
     },
-    post_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    post_id: DataTypes.INTEGER,
     nick: DataTypes.string(20),
     comment: DataTypes.TEXT,
   };

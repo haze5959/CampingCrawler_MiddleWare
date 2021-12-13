@@ -13,8 +13,7 @@ export class User extends Model {
         },
         nick: {
             type: DataTypes.STRING,
-            length: 40,
-            allowNull: false,
+            length: 40            
         },
         auth_level: DataTypes.INTEGER,
         area_bit: DataTypes.INTEGER,

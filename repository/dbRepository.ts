@@ -113,30 +113,30 @@ class PostsRepository {
   }
 
   async createComment(postId: number, nick: string, body: string) {
-    await Comment.create({
-      post_id: postId,
-      nick: nick,
-      comment: body,
-    });
+    // await Comment.create({
+    //   post_id: postId,
+    //   nick: nick,
+    //   comment: body,
+    // });
 
-    const posts = await Posts.find(postId);
-    const commentCount = posts.comment_count as number;
-    posts.comment_count = commentCount + 1;
-    return await posts.update();
+    // const posts = await Posts.find(postId);
+    // const commentCount = posts.comment_count as number;
+    // posts.comment_count = commentCount + 1;
+    // return await posts.update();
 
     // 트랜젝션에 문제가 있음. denoDB 업데이트 필요
-    // return await db.transaction(async () => {
-    //   await Comment.create({
-    //     post_id: postId,
-    //     nick: nick,
-    //     comment: body,
-    //    });
+    return await db.transaction(async () => {
+      await Comment.create({
+        post_id: postId,
+        nick: nick,
+        comment: body,
+       });
 
-    //   const posts = await Posts.find(postId);
-    //   const commentCount = posts.comment_count as number;
-    //   posts.comment_count = commentCount + 1;
-    //   await posts.update();
-    // });
+      const posts = await Posts.find(postId);
+      const commentCount = posts.comment_count as number;
+      posts.comment_count = commentCount + 1;
+      await posts.update();
+    });
   }
 
   async deletePosts(id: number) {

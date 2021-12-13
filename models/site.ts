@@ -16,49 +16,33 @@ export class Site extends Model {
     name: {
       type: DataTypes.STRING,
       length: 20,
-      allowNull: false,
     },
     addr: {
       type: DataTypes.STRING,
       length: 40,
-      allowNull: false,
     },
     desc: {
       type: DataTypes.STRING,
       length: 45,
-      allowNull: false,
     },
     phone: {
       type: DataTypes.STRING,
       length: 14,
-      allowNull: false,
     },
-    lat: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    lon: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    area: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    lat: DataTypes.FLOAT,
+    lon: DataTypes.FLOAT,
+    area: DataTypes.INTEGER,
     homepage_url: {
       type: DataTypes.STRING,
       length: 120,
-      allowNull: false,
     },
     reservation_url: {
       type: DataTypes.STRING,
       length: 120,
-      allowNull: false,
     },
     reservation_open: {
       type: DataTypes.STRING,
       length: 15,
-      allowNull: false,
     },
   };
 }
