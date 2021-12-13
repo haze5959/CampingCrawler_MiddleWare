@@ -1,6 +1,5 @@
 import "https://deno.land/x/dotenv/load.ts";
-// import { Database, MySQLConnector } from "https://deno.land/x/denodb/mod.ts";
-import { Database, MySQLConnector } from "../utils/denodb-update-deps/mod.ts";
+import { Database, MySQLConnector } from "https://deno.land/x/denodb@v1.0.40/mod.ts";
 import { Comment, Posts } from "../models/posts.ts";
 import { User } from "../models/user.ts";
 import { Site } from "../models/site.ts";
@@ -20,8 +19,23 @@ db.link([Posts, Comment, User, Site, Favorite, Push, Report]);
 
 class PostsRepository {
   async getPosts(id: number) {
-    const posts = await Posts.find(id);
-    const comments = await Comment.where("post_id", id)
+    const posts = await Posts.select(
+      "id",
+      "type",
+      "title",
+      "body",
+      "nick",
+      "updated_at",
+      "comment_count",
+    ).find(id);
+    const comments = await Comment.select(
+      "id",
+      "post_id",
+      "nick",
+      "comment",
+      "updated_at",
+    )
+      .where("post_id", id)
       .orderBy("id", "desc")
       .all();
     return {
