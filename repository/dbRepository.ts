@@ -45,7 +45,7 @@ class PostsRepository {
   }
 
   async getHomePosts() {
-    const amountOfPage = 5;
+    const amountOfPage = 9;
     const notice = await Posts.where("type", 0)
       .select("id", "type", "title", "nick", "updated_at", "comment_count")
       .orderBy("id", "desc")
