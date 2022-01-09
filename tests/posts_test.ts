@@ -12,12 +12,6 @@ await singleton.updateHolidayInFourMonth();
 await singleton.updatesiteSimpleInfo();
 await delay(1000);
 
-// Deno.test("GET /home", async () => {
-//   const request = await superoak(app);
-//   await request.get("/home")
-//     .expect(testCheck);
-// });
-
 // Deno.test("GET /post/:id", async () => {
 //   const request = await superoak(app);
 //   await request.get("/post/1")
@@ -30,12 +24,11 @@ await delay(1000);
 //     .expect(testCheck);
 // });
 
-// Deno.test("GET /post/list/:page", async () => {
-//   const request = await superoak(app);
-//   await request.get("/post/list/1?is_notice=true")
-//     .expect(testCheck)
-//     .on("response", (res) => { console.log(res.body); })
-// });
+Deno.test("GET /post/list/:page", async () => {
+  const request = await superoak(app);
+  await request.get("/post/list/1?is_notice=false")
+    .expect(testCheck)
+});
 
 // Deno.test("POST /post", async () => {
 //   const request = await superoak(app);

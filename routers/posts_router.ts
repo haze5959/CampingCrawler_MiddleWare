@@ -2,7 +2,6 @@ import { Router } from "https://deno.land/x/oak/mod.ts";
 import {
   deleteComment,
   deletePosts,
-  getHomePosts,
   getPosts,
   getPostsPage,
   postComment,
@@ -12,7 +11,6 @@ import {
 const postsRouter = new Router();
 postsRouter
   // 포스트 관련
-  .get("/home", getHomePosts)
   .get("/post/:id", getPosts)
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)

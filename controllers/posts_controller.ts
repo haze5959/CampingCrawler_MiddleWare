@@ -5,16 +5,6 @@ import { ErrorMessage } from "../utils/error_msg.ts";
 
 const emptyNick = "익명의 캠퍼";
 
-export async function getHomePosts(ctx: Context) {
-  try {
-    const data = await postsRepo.getHomePosts();
-    ctx.response.body = { result: true, msg: "", data: data };
-  } catch (error) {
-    console.error(error);
-    ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
-  }
-}
-
 export async function getPosts(ctx: Context) {
   const params = helpers.getQuery(ctx, { mergeParams: true });
   const id = Number(params.id);

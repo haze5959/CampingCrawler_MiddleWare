@@ -12,6 +12,12 @@ await singleton.updateHolidayInFourMonth();
 await singleton.updatesiteSimpleInfo();
 await delay(1000);
 
+Deno.test("GET /home", async () => {
+  const request = await superoak(app);
+  await request.get("/home?area_bit=1")
+    .expect(testCheck);
+});
+
 Deno.test("GET /camp", async () => {
   const request = await superoak(app);
   await request.get("/camp?area_bit=1")

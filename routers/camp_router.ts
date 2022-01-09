@@ -1,5 +1,6 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
 import {
+  getHomeInfo,
   getCampAvailDatesDatail,
   getCampAvailDatesList,
   getCampSiteDetail,
@@ -10,6 +11,7 @@ const campRouter = new Router();
 
 campRouter
   // 캠프 관련
+  .get("/home", getHomeInfo)
   .get("/camp", getCampAvailDatesList)
   .get("/camp/:id", getCampAvailDatesDatail)
   .get("/info", getCampSiteSimpleInfo)
