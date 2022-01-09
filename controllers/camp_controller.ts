@@ -62,7 +62,7 @@ export async function getCampAvailDatesList(ctx: Context) {
     ctx.response.body = {
       result: true,
       msg: "",
-      data: { "camps": infoJson, "holiday": singleton.holidaysInFourMonth },
+      data: { "camps": infoJson },
     };
   } catch (error) {
     console.error(error);
@@ -86,7 +86,7 @@ export async function getCampAvailDatesList(ctx: Context) {
 //       ctx.response.body = {
 //         result: true,
 //         msg: "",
-//         data: { "camp": json, "holiday": singleton.holidaysInFourMonth },
+//         data: { "camp": json },
 //       };
 //     } catch (error) {
 //       ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
@@ -116,7 +116,6 @@ export async function getCampAvailDatesDatail(ctx: Context) {
         msg: "",
         data: {
           "camp": json,
-          "holiday": singleton.holidaysInFourMonth,
           "info": siteInfo,
         },
       };
@@ -130,7 +129,10 @@ export async function getCampAvailDatesDatail(ctx: Context) {
 }
 
 export function getCampSiteSimpleInfo(ctx: Context) {
-  ctx.response.body = { result: true, msg: "", data: singleton.siteSimpleInfo };
+  ctx.response.body = { result: true, msg: "", data: {
+    "site_info_list": singleton.siteSimpleInfo,
+    "holiday": singleton.holidaysInFourMonth
+  } };
 }
 
 export async function getCampSiteDetail(ctx: Context) {
