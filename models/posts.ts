@@ -14,18 +14,20 @@ export class Posts extends Model {
     type: DataTypes.INTEGER,
     title: DataTypes.string(45),
     body: DataTypes.TEXT,
-    nick: DataTypes.string(20),
+    user_id: DataTypes.string(30),
     comment_count: DataTypes.INTEGER,
     secret_key: DataTypes.string(40),
+    good_count: DataTypes.INTEGER,
   };
 
   id!: number;
   type!: number;
   title!: string;
   body!: string;
-  nick!: string;
+  user_id!: string;
   comment_count!: number;
   secret_key!: string;
+  good_count!: number;
 }
 
 export class Comment extends Model {
@@ -40,12 +42,14 @@ export class Comment extends Model {
       autoIncrement: true,
     },
     post_id: DataTypes.INTEGER,
-    nick: DataTypes.string(20),
+    user_id: DataTypes.string(30),
     comment: DataTypes.TEXT,
+    good_count: DataTypes.INTEGER,
   };
 
   id!: number;
   post_id!: number;
-  nick!: string;
+  user_id!: string;
   comment!: string;
+  good_count!: number;
 }

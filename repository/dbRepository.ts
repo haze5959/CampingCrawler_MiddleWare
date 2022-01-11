@@ -6,6 +6,7 @@ import { Site } from "../models/site.ts";
 import { Favorite } from "../models/favorite.ts";
 import { Push } from "../models/push.ts";
 import { Report } from "../models/report.ts";
+import { Review } from "../models/review.ts";
 
 const connector = new MySQLConnector({
   database: "camp",
@@ -15,7 +16,7 @@ const connector = new MySQLConnector({
 });
 
 const db = new Database(connector);
-db.link([Posts, Comment, User, Site, Favorite, Push, Report]);
+db.link([Posts, Comment, User, Site, Favorite, Push, Report, Review]);
 
 class PostsRepository {
   async getPosts(id: number) {
@@ -27,6 +28,7 @@ class PostsRepository {
       "nick",
       "updated_at",
       "comment_count",
+      "good_count"
     ).find(id);
     const comments = await Comment.select(
       "id",
@@ -34,6 +36,7 @@ class PostsRepository {
       "nick",
       "comment",
       "updated_at",
+      "good_count"
     )
       .where("post_id", id)
       .orderBy("id", "desc")
@@ -47,13 +50,13 @@ class PostsRepository {
   async getHomePosts() {
     const amountOfPage = 9;
     const notice = await Posts.where("type", 0)
-      .select("id", "type", "title", "nick", "updated_at", "comment_count")
+      .select("id", "type", "title", "nick", "updated_at", "comment_count", "good_count")
       .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
 
     const posts = await Posts.where("type", ">", 0)
-      .select("id", "type", "title", "nick", "updated_at", "comment_count")
+      .select("id", "type", "title", "nick", "updated_at", "comment_count", "good_count")
       .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
@@ -75,6 +78,7 @@ class PostsRepository {
       "nick",
       "updated_at",
       "comment_count",
+      "good_count"
     )
       .orderBy("id", "desc")
       .offset(amountOfPage * (page - 1))
@@ -93,6 +97,7 @@ class PostsRepository {
       "nick",
       "updated_at",
       "comment_count",
+      "good_count"
     );
 
     if (isNotice) {
@@ -193,6 +198,7 @@ class UserRepository {
       "use_push_site_on_holiday",
       "use_push_reservation_day",
       "use_push_notice",
+      "profile_url",
     )
       .find(uid);
 

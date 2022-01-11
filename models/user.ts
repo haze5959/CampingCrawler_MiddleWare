@@ -32,6 +32,10 @@ export class User extends Model {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    profile_url: {
+      type: DataTypes.STRING,
+      length: 20,
+    },
   };
 
   static defaults = {
@@ -51,4 +55,5 @@ export class User extends Model {
   use_push_site_on_holiday!: number;
   use_push_reservation_day!: number;
   use_push_notice!: number;
+  profile_url!: string;
 }
