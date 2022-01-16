@@ -1,5 +1,8 @@
 import "https://deno.land/x/dotenv/load.ts";
-import { Database, MySQLConnector } from "https://deno.land/x/denodb@v1.0.40/mod.ts";
+import {
+  Database,
+  MySQLConnector,
+} from "https://deno.land/x/denodb@v1.0.40/mod.ts";
 import { Comment, Posts } from "../models/posts.ts";
 import { User } from "../models/user.ts";
 import { Site } from "../models/site.ts";
@@ -7,6 +10,7 @@ import { Favorite } from "../models/favorite.ts";
 import { Push } from "../models/push.ts";
 import { Report } from "../models/report.ts";
 import { Review } from "../models/review.ts";
+import { Good } from "../models/good.ts";
 
 const connector = new MySQLConnector({
   database: "camp",
@@ -16,31 +20,34 @@ const connector = new MySQLConnector({
 });
 
 const db = new Database(connector);
-db.link([Posts, Comment, User, Site, Favorite, Push, Report, Review]);
+db.link([Posts, Comment, User, Site, Favorite, Push, Report, Review, Good]);
 
 class PostsRepository {
   async getPosts(id: number) {
+    // 해보고 안되면 걍 db.query 이거 사용하기
     const posts = await Posts.select(
       "id",
       "type",
       "title",
       "body",
-      "nick",
       "updated_at",
-      "comment_count",
-      "good_count"
-    ).find(id);
+      "good_count",
+    ).join(User, "user_id", "user_id")
+      .find(id);
+
+    console.log(posts);
     const comments = await Comment.select(
       "id",
       "post_id",
-      "nick",
       "comment",
       "updated_at",
-      "good_count"
-    )
-      .where("post_id", id)
+      "good_count",
+    ).where("post_id", id)
+      .join(User, "user_id", "user_id")
       .orderBy("id", "desc")
       .all();
+
+    console.log(comments);
     return {
       posts: posts,
       commentList: comments,
@@ -49,14 +56,24 @@ class PostsRepository {
 
   async getHomePosts() {
     const amountOfPage = 9;
-    const notice = await Posts.where("type", 0)
-      .select("id", "type", "title", "nick", "updated_at", "comment_count", "good_count")
+    const query = Posts
+      .select(
+        "id",
+        "type",
+        "title",
+        "updated_at",
+        "comment_count",
+        "good_count",
+      );
+
+    const notice = await query.where("type", 0)
+      .join(User, "user_id", "user_id")
       .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
 
-    const posts = await Posts.where("type", ">", 0)
-      .select("id", "type", "title", "nick", "updated_at", "comment_count", "good_count")
+    const posts = await query.where("type", ">", 0)
+      .join(User, "user_id", "user_id")
       .orderBy("id", "desc")
       .take(amountOfPage)
       .get();
@@ -75,11 +92,11 @@ class PostsRepository {
       "type",
       "title",
       "body",
-      "nick",
       "updated_at",
       "comment_count",
-      "good_count"
+      "good_count",
     )
+      .join(User, "user_id", "user_id")
       .orderBy("id", "desc")
       .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
@@ -94,10 +111,9 @@ class PostsRepository {
       "type",
       "title",
       "body",
-      "nick",
       "updated_at",
       "comment_count",
-      "good_count"
+      "good_count",
     );
 
     if (isNotice) {
@@ -107,6 +123,7 @@ class PostsRepository {
     }
 
     return await query
+      .join(User, "user_id", "user_id")
       .orderBy("id", "desc")
       .offset(amountOfPage * (page - 1))
       .take(amountOfPage)
@@ -114,7 +131,7 @@ class PostsRepository {
   }
 
   async getComment(id: number) {
-    const comments = await Comment.find(id);
+    const comments = await Comment.join(User, "user_id", "user_id").find(id);
     return comments;
   }
 
@@ -122,21 +139,21 @@ class PostsRepository {
     type: number,
     title: string,
     body: string,
-    nick: string,
+    userId: string,
   ) {
     const posts = new Posts();
     posts.type = type;
     posts.title = title;
     posts.body = body;
-    posts.nick = nick;
+    posts.user_id = userId;
 
     return await posts.save();
   }
 
-  async createComment(postId: number, nick: string, body: string) {
+  async createComment(postId: number, userId: string, body: string) {
     await Comment.create({
       post_id: postId,
-      nick: nick,
+      user_id: userId,
       comment: body,
     });
 
@@ -158,6 +175,24 @@ class PostsRepository {
     //   posts.comment_count = commentCount + 1;
     //   await posts.update();
     // });
+  }
+
+  async createPostsGood(postId: number, userId: string) {
+    const good = new Good();
+    good.type = 0;
+    good.type_id = postId;
+    good.user_id = userId;
+
+    return await good.save();
+  }
+
+  async createCommentGood(commentId: number, userId: string) {
+    const good = new Good();
+    good.type = 1;
+    good.type_id = commentId;
+    good.user_id = userId;
+
+    return await good.save();
   }
 
   async deletePosts(id: number) {
@@ -185,6 +220,14 @@ class PostsRepository {
     //   await posts.update();
     //   await await Comment.where("id", id).delete();
     // });
+  }
+
+  async deletePostsGood(postId: number, userId: string) {
+    return await await Comment.where("id", id).delete();
+  }
+
+  async deleteCommentGood(commentId: number, userId: string) {
+    return await await Comment.where("id", id).delete();
   }
 }
 
@@ -224,7 +267,8 @@ class UserRepository {
   }
 
   async getFavorite(uid: string) {
-    return await Favorite.select("camp_id")
+    return await Favorite
+      .select("camp_id")
       .where("user_id", uid);
   }
 
@@ -255,17 +299,8 @@ class UserRepository {
   async updateUserNick(
     uid: string,
     nick: string,
-    oldNick: string,
   ) {
-    await Posts.where("nick", oldNick).update("nick", nick);
-    await Comment.where("nick", oldNick).update("nick", nick);
     return await User.where("user_id", uid).update("nick", nick);
-    // 트랜젝션에 문제가 있음. denoDB 업데이트 필요
-    // return await db.transaction(async () => {
-    //   await Posts.where("nick", oldNick).update("nick", nick);
-    //   await Comment.where("nick", oldNick).update("nick", nick);
-    //   await User.where("user_id", uid).update("nick", nick);
-    // });
   }
 
   async updateUserArea(

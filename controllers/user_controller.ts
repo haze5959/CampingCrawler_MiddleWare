@@ -26,7 +26,10 @@ export async function getUser(ctx: Context) {
           await userRepo.createUser(authInfo.uid, name);
           const signUpResult = await userRepo.getUser(authInfo.uid);
           if (signUpResult == null) {
-            ctx.response.body = { result: false, msg: ErrorMessage.SIGN_UP_FAIL};
+            ctx.response.body = {
+              result: false,
+              msg: ErrorMessage.SIGN_UP_FAIL,
+            };
           } else {
             ctx.response.body = {
               result: true,
@@ -78,12 +81,9 @@ export async function putUserNick(ctx: Context) {
 
       const authInfo = await getAuthInfo(token);
       if (authInfo != null) {
-        const userResult = await userRepo.getUser(authInfo.uid);
-        const oldNick = userResult.user.nick as string;
         const result = await userRepo.updateUserNick(
           authInfo.uid,
           nick,
-          oldNick,
         );
         if (result != undefined) {
           ctx.response.body = { result: true, msg: "" };
