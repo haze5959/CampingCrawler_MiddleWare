@@ -4,11 +4,13 @@ export class Good extends Model {
   static table = "good";
 
   static fields = {
-    type: DataTypes.INTEGER,
+    id: DataTypes.INTEGER,
+    type: DataTypes.INTEGER,  // 0 - 게시물 / 1 - 댓글
     type_id: DataTypes.INTEGER,
-    user_id: DataTypes.string(30),
+    user_id: DataTypes.string(30)
   };
 
+  id!: number;
   type!: number;
   type_id!: number;
   user_id!: string;

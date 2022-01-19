@@ -4,26 +4,26 @@ import {
   deletePosts,
   getPosts,
   getPostsPage,
-  getPostsGoodInfo,
-  getCommentGoodInfo,
+  getPostGood,
+  getCommentGood,
   postComment,
   postPosts,
-  createPostsGood,
-  createCommentGood
+  postGood,
+  deleteGood
 } from "../controllers/posts_controller.ts";
 
 const postsRouter = new Router();
 postsRouter
   // 포스트 관련
   .get("/post/:id", getPosts)
-  .get("/post/good:id", getPostsGoodInfo)
-  .get("/comment/good:id", getCommentGoodInfo)
+  .get("/good/post/:id", getPostGood)
+  .get("/good/comment/:id", getCommentGood)
   .get("/post/list/:page", getPostsPage)
   .post("/post", postPosts)
   .post("/comment", postComment)
-  .post("/post/good", createPostsGood)
-  .post("/comment/good", createCommentGood)
+  .post("/good", postGood)
   .delete("/post/:token", deletePosts)
   .delete("/comment/:token", deleteComment)
+  .delete("/good/:token", deleteGood)
 
 export { postsRouter };

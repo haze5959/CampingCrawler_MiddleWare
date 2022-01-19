@@ -75,7 +75,7 @@ export async function getPostsPage(ctx: Context) {
   if (page != undefined) {
     if (params.is_notice != undefined) {
       const isNotice = params.is_notice == "true";
-      
+
       try {
         const info = await postsRepo.getPostsWith(page, isNotice);
         ctx.response.body = { result: true, msg: "", data: info };
@@ -91,6 +91,40 @@ export async function getPostsPage(ctx: Context) {
         console.error(error);
         ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
       }
+    }
+  } else {
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
+  }
+}
+
+export async function getPostGood(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const id = Number(params.id);
+
+  if (id != undefined) {
+    try {
+      const goodInfoList = await postsRepo.getGood(0, id);
+      ctx.response.body = { result: true, msg: "", data: goodInfoList };
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
+    }
+  } else {
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
+  }
+}
+
+export async function getCommentGood(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const id = Number(params.id);
+
+  if (id != undefined) {
+    try {
+      const goodInfoList = await postsRepo.getGood(1, id);
+      ctx.response.body = { result: true, msg: "", data: goodInfoList };
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
     }
   } else {
     ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
@@ -183,6 +217,39 @@ export async function postComment(ctx: Context) {
   }
 }
 
+export async function postGood(ctx: Context) {
+  if (ctx.request.hasBody) {
+    try {
+      const body = await ctx.request.body({ type: "json" }).value;
+      const type = body["type"] as number;
+      const id = body["id"] as number;
+      const token = body["token"] as string;
+
+      if (type != null && id != null && token != null) {
+        const authInfo = await getAuthInfo(token);
+        if (authInfo == null) {
+          ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
+          return;
+        } else {
+          const result = await postsRepo.createGood(type, id, authInfo.uid);
+          if (result != undefined) {
+            ctx.response.body = { result: true, msg: "" };
+          } else {
+            ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
+          }
+        }
+      } else {
+        ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
+      }
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
+    }
+  } else {
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
+  }
+}
+
 export async function deletePosts(ctx: Context) {
   const params = helpers.getQuery(ctx, { mergeParams: true });
   const token = params.token;
@@ -251,6 +318,28 @@ export async function deleteComment(ctx: Context) {
       }
 
       const result = await postsRepo.deleteComment(id, postId);
+      if (result != undefined) {
+        ctx.response.body = { result: true, msg: "" };
+      } else {
+        ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXIST };
+      }
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
+    }
+  } else {
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
+  }
+}
+
+export async function deleteGood(ctx: Context) {
+  const params = helpers.getQuery(ctx, { mergeParams: true });
+  const token = params.token;
+  const id = Number(params.id);
+
+  if (token != undefined && id != undefined) {
+    try {
+      const result = await postsRepo.deleteGood(id);
       if (result != undefined) {
         ctx.response.body = { result: true, msg: "" };
       } else {
