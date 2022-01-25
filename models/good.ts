@@ -4,7 +4,12 @@ export class Good extends Model {
   static table = "good";
 
   static fields = {
-    id: DataTypes.INTEGER,
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      unique: true,
+      autoIncrement: true,
+    },
     type: DataTypes.INTEGER,  // 0 - 게시물 / 1 - 댓글
     type_id: DataTypes.INTEGER,
     user_id: DataTypes.string(30)

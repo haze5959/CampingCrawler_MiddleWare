@@ -16,6 +16,7 @@ export class Posts extends Model {
     body: DataTypes.TEXT,
     user_id: DataTypes.string(30),
     comment_count: DataTypes.INTEGER,
+    good_count: DataTypes.INTEGER,
   };
 
   id!: number;
@@ -24,6 +25,7 @@ export class Posts extends Model {
   body!: string;
   user_id!: string;
   comment_count!: number;
+  good_count!: number;
 }
 
 export class Comment extends Model {
@@ -40,10 +42,12 @@ export class Comment extends Model {
     post_id: DataTypes.INTEGER,
     user_id: DataTypes.string(30),
     comment: DataTypes.TEXT,
+    good_count: DataTypes.INTEGER,
   };
 
   id!: number;
   post_id!: number;
   user_id!: string;
   comment!: string;
+  good_count!: number;
 }

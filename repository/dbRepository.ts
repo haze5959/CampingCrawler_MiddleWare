@@ -35,7 +35,7 @@ class PostsRepository {
         "updated_at",
         User.field("nick"),
         User.field("user_id"),
-        // "good_count",
+        "good_count",
       )
       .find(id);
 
@@ -49,7 +49,7 @@ class PostsRepository {
         "updated_at",
         User.field("nick"),
         User.field("user_id"),
-        // "good_count",
+        "good_count",
       )
       .orderBy("id", "desc")
       .all();
@@ -72,7 +72,7 @@ class PostsRepository {
         "comment_count",
         User.field("nick"),
         User.field("user_id"),
-        // "good_count",
+        "good_count",
       )
       .orderBy("id", "desc")
       .take(amountOfPage);
@@ -103,7 +103,7 @@ class PostsRepository {
         "comment_count",
         User.field("nick"),
         User.field("user_id"),
-        // "good_count",
+        "good_count",
       )
       .orderBy("id", "desc")
       .offset(amountOfPage * (page - 1))
@@ -133,7 +133,7 @@ class PostsRepository {
         "comment_count",
         User.field("nick"),
         User.field("user_id"),
-        // "good_count",
+        "good_count",
       )
       .orderBy("id", "desc")
       .offset(amountOfPage * (page - 1))
@@ -208,8 +208,23 @@ class PostsRepository {
     good.type = type;
     good.type_id = id;
     good.user_id = userId;
+    good.save();
 
-    return await good.save();
+    if (type == 0) { // 게시물
+      const posts = await Posts.find(id);
+      const goodCount = posts.good_count as number;
+      posts.good_count = goodCount + 1;
+      return await posts.update();
+    } else if (type == 1) { // 댓글
+      const comment = await Comment.find(id);
+      const goodCount = comment.good_count as number;
+      comment.good_count = goodCount + 1;
+      return await comment.update();
+    } else {
+      return good;
+    }
+
+    // 트랜잭션 문제 해결되면 바꿔라
   }
 
   async deletePosts(id: number) {
@@ -240,7 +255,22 @@ class PostsRepository {
   }
 
   async deleteGood(id: number) {
-    return await Good.where("id", id).delete();
+    const model = await Good.find(id);
+    const typeId = model.type_id as number;
+
+    if (model.type == 0) { // 게시물
+      const posts = await Posts.find(typeId);
+      const goodCount = posts.good_count as number;
+      posts.good_count = goodCount - 1;
+      return await posts.update();
+    } else if (model.type == 1) { // 댓글
+      const comment = await Comment.find(typeId);
+      const goodCount = comment.good_count as number;
+      comment.good_count = goodCount - 1;
+      return await comment.update();
+    }
+
+    await model.delete();
   }
 }
 
