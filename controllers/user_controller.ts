@@ -102,6 +102,36 @@ export async function putUserNick(ctx: Context) {
   }
 }
 
+export async function putUserProfile(ctx: Context) {
+  if (ctx.request.hasBody) {
+    try {
+      const body = await ctx.request.body({ type: "json" }).value;
+      const token = body["token"] as string;
+      const profileUrl = body["profile"] as string;
+
+      const authInfo = await getAuthInfo(token);
+      if (authInfo != null) {
+        const result = await userRepo.updateUserProfileUrl(
+          authInfo.uid,
+          profileUrl,
+        );
+        if (result != undefined) {
+          ctx.response.body = { result: true, msg: "" };
+        } else {
+          ctx.response.body = { result: false, msg: ErrorMessage.NOT_EXCUTE };
+        }
+      } else {
+        ctx.response.body = { result: false, msg: ErrorMessage.AUTH_FAIL };
+      }
+    } catch (error) {
+      console.error(error);
+      ctx.response.body = { result: false, msg: ErrorMessage.SERVER_ERROR };
+    }
+  } else {
+    ctx.response.body = { result: false, msg: ErrorMessage.PARAM_FAIL };
+  }
+}
+
 export async function putUserArea(ctx: Context) {
   if (ctx.request.hasBody) {
     try {

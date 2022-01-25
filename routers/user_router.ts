@@ -8,6 +8,7 @@ import {
   postFavorite,
   putUserArea,
   putUserNick,
+  putUserProfile,
   createReport,
   changeReportState,
   deleteReport,
@@ -20,6 +21,7 @@ userRouter
   .delete("/user/:token", deleteUser)
   .put("/user/area", putUserArea)
   .put("/user/nick", putUserNick)
+  .put("/user/profile", putUserProfile)
   .get("/user/push/:token", getPushInfo)
   .get("/user/favorite/:token", getFavorite)
   .post("/user/favorite", postFavorite)

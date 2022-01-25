@@ -350,6 +350,13 @@ class UserRepository {
     return await User.where("user_id", uid).update("nick", nick);
   }
 
+  async updateUserProfileUrl(
+    uid: string,
+    url: string,
+  ) {
+    return await User.where("user_id", uid).update("profile_url", url);
+  }
+
   async updateUserArea(
     uid: string,
     areaBit: number,
