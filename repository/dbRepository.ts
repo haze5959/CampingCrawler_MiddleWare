@@ -34,7 +34,7 @@ class PostsRepository {
         "body",
         "updated_at",
         User.field("nick"),
-        User.field("user_id"),
+        User.field("profile_url"),
         "good_count",
       )
       .find(id);
@@ -48,7 +48,7 @@ class PostsRepository {
         "comment",
         "updated_at",
         User.field("nick"),
-        User.field("user_id"),
+        User.field("profile_url"),
         "good_count",
       )
       .orderBy("id", "desc")
@@ -71,7 +71,7 @@ class PostsRepository {
         "updated_at",
         "comment_count",
         User.field("nick"),
-        User.field("user_id"),
+        User.field("profile_url"),
         "good_count",
       )
       .orderBy("id", "desc")
@@ -102,7 +102,7 @@ class PostsRepository {
         "updated_at",
         "comment_count",
         User.field("nick"),
-        User.field("user_id"),
+        User.field("profile_url"),
         "good_count",
       )
       .orderBy("id", "desc")
@@ -132,7 +132,7 @@ class PostsRepository {
         "updated_at",
         "comment_count",
         User.field("nick"),
-        User.field("user_id"),
+        User.field("profile_url"),
         "good_count",
       )
       .orderBy("id", "desc")

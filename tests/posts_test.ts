@@ -12,11 +12,11 @@ await singleton.updateHolidayInFourMonth();
 await singleton.updatesiteSimpleInfo();
 await delay(1000);
 
-// Deno.test("GET /post/:id", async () => {
-//   const request = await superoak(app);
-//   await request.get("/post/1")
-//     .expect(testCheck);
-// });
+Deno.test("GET /post/:id", async () => {
+  const request = await superoak(app);
+  await request.get("/post/1")
+    .expect(testCheck);
+});
 
 // Deno.test("GET /post/:id/:token", async () => {
 //   const request = await superoak(app);
@@ -58,11 +58,11 @@ await delay(1000);
 //     .expect(testCheck);
 // });
 
-Deno.test("GET /good/post/:id", async () => {
-  const request = await superoak(app);
-  await request.get("/good/post/1")
-    .expect(testCheck);
-});
+// Deno.test("GET /good/post/:id", async () => {
+//   const request = await superoak(app);
+//   await request.get("/good/post/1")
+//     .expect(testCheck);
+// });
 
 // Deno.test("GET /good/comment/:id", async () => {
 //   const request = await superoak(app);

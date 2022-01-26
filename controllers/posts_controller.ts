@@ -12,6 +12,7 @@ export async function getPosts(ctx: Context) {
   if (id != undefined) {
     try {
       const info = await postsRepo.getPosts(id);
+      console.log(info);
       if (info.posts["type"] == 3) {
         const token = params.token;
         const authInfo = await getAuthInfo(token);
